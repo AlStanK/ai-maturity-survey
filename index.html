@@ -472,7 +472,8 @@ code, kbd, samp { font-family: var(--font-mono); }
     width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%;
     display: block;
     /* холодний оригінал зводимо до теплої палітри системи */
-    filter: sepia(0.62) saturate(1.35) hue-rotate(-12deg) brightness(0.95) contrast(1.08);
+    /* grayscale знімає холодний ціан, далі sepia фарбує в тон системи */
+    filter: grayscale(1) sepia(0.92) saturate(2.4) hue-rotate(-8deg) brightness(1.02) contrast(1.06);
   }
   .hero-art-inner::after {
     content: ""; position: absolute; inset: 0; border-radius: var(--radius-circle);
