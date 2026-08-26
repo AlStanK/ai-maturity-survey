@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Індекс ШІ-зрілості організаційної культури</title>
+<meta name="description" content="Анонімне дослідження культурної готовності компаній до системного використання штучного інтелекту. 13 хвилин, миттєвий результат.">
+<style>
+/* ---- AInoia DS: tokens/fonts.css ---- */
+/* ==========================================================================
+   AInoia — Webfonts
+   Substituted from Google Fonts (no original binaries were provided):
+   - Jost            → geometric, thin, wide-tracking display (AInoia wordmark feel)
+   - Instrument Serif → editorial serif ITALIC — the new glass-shimmer hero voice
+   - Hanken Grotesk  → neutral humanist grotesque for UI + body (now also 800 extrabold,
+                       the heavy partner in the serif-italic / sans-extrabold display pair)
+   - JetBrains Mono  → data, metrics, code, agent IDs
+   Flag: confirm the exact wordmark typeface with the brand owner.
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+/* ---- AInoia DS: tokens/colors.css ---- */
+/* ==========================================================================
+   AInoia — Color tokens  (Warm Coffee theme)
+   Brand world re-skinned: a warm, editorial coffee canvas, paper-cream
+   light-side neutrals, and a signature tan → bronze → deep-coffee
+   "balance" gradient. Dark (coffee) is the default; the paper palette
+   lives in the marble-* tokens for light-side counterpoint sections.
+   ========================================================================== */
+
+:root {
+  /* --- Core neutrals (warm coffee dark) --------------------------------- */
+  --void: #1f1a16;          /* deepest background, true canvas */
+  --ink-900: #2d2621;       /* page background */
+  --ink-800: #342c26;       /* raised surface */
+  --ink-700: #3a322c;       /* panel / card */
+  --ink-600: #433a31;       /* elevated card */
+  --ink-500: #4a4039;       /* hover surface / input */
+  --ink-400: #59493e;       /* strong border / divider */
+  --ink-300: #6e5c4b;       /* muted line */
+
+  /* --- Paper (light side) ----------------------------------------------- */
+  --marble-50: #f5f1e6;     /* light section background */
+  --marble-100: #ece5d8;
+  --marble-200: #e2d8c3;
+  --marble-300: #d4c8aa;
+
+  /* --- Text ------------------------------------------------------------- */
+  --fg-1: #ece5d8;          /* primary text on dark */
+  --fg-2: #c5bcac;          /* secondary text */
+  --fg-3: #a2937f;          /* muted / captions */
+  --fg-4: #7d6f5d;          /* disabled / faint */
+  --fg-on-light: #4a3f35;   /* text on paper surfaces */
+
+  /* --- Signature accents (warm) ----------------------------------------- */
+  --cyan: #c0a080;          /* primary tan (philosophy spark) */
+  --cyan-bright: #d6bd9c;
+  --cyan-deep: #a67c52;
+  --blue: #a67c52;          /* mid bridge (bronze) */
+  --blue-deep: #8d6e4c;
+  --violet: #b3906f;        /* technology side (clay) */
+  --violet-bright: #c8a585;
+  --magenta: #b54a35;       /* terracotta circuit pop */
+
+  /* --- Signature gradients ---------------------------------------------- */
+  --grad-balance: linear-gradient(100deg, var(--cyan-bright) 0%, var(--cyan-deep) 48%, #735a3a 100%);
+  --grad-balance-soft: linear-gradient(100deg, var(--cyan-deep) 0%, var(--blue-deep) 50%, #735a3a 100%);
+  --grad-spark: radial-gradient(circle at 50% 50%, var(--cyan-bright) 0%, var(--cyan) 35%, transparent 72%);
+  --grad-hero: radial-gradient(120% 110% at 50% 0%, #3a322c 0%, var(--ink-900) 46%, var(--void) 100%);
+
+  /* --- Semantic / status ------------------------------------------------ */
+  --success: #7e9460;       /* warm sage */
+  --warning: #c79a4a;       /* amber */
+  --danger: #b54a35;        /* terracotta */
+  --info: var(--cyan);
+
+  /* --- Semantic surface aliases ----------------------------------------- */
+  --surface-page: var(--ink-900);
+  --surface-raised: var(--ink-800);
+  --surface-card: var(--ink-700);
+  --surface-card-hover: var(--ink-500);
+  --surface-overlay: rgba(31, 26, 22, 0.74);
+  --surface-light: var(--marble-50);
+
+  /* --- Borders (warm cream hairlines) ----------------------------------- */
+  --border-subtle: rgba(236, 229, 216, 0.07);
+  --border-default: rgba(236, 229, 216, 0.12);
+  --border-strong: rgba(236, 229, 216, 0.20);
+  --border-glow: rgba(192, 160, 128, 0.45);
+
+  /* --- Semantic text aliases -------------------------------------------- */
+  --text-heading: var(--fg-1);
+  --text-body: var(--fg-2);
+  --text-muted: var(--fg-3);
+  --text-accent: var(--cyan);
+  --text-link: var(--cyan-bright);
+
+  /* --- Focus / selection ------------------------------------------------ */
+  --focus-ring: rgba(192, 160, 128, 0.55);
+  --selection-bg: rgba(192, 160, 128, 0.28);
+}
+
+/* ---- AInoia DS: tokens/typography.css ---- */
+/* ==========================================================================
+   AInoia — Typography tokens
+   Display = geometric thin + wide tracking (the AInoia wordmark voice).
+   Body = neutral grotesque. Mono = data & agent identifiers.
+   ========================================================================== */
+
+:root {
+  /* --- Families --------------------------------------------------------- */
+  --font-display: "Jost", "Century Gothic", system-ui, sans-serif;
+  --font-serif: "Instrument Serif", "Newsreader", Georgia, "Times New Roman", serif;
+  --font-body: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  /* --- Weights ---------------------------------------------------------- */
+  --weight-thin: 200;
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;   /* heavy sans partner in the glass display pair */
+
+  /* --- Type scale (fluid-friendly fixed px) ----------------------------- */
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-md: 17px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 30px;
+  --text-3xl: 38px;
+  --text-4xl: 50px;
+  --text-5xl: 66px;
+  --text-6xl: 88px;
+
+  /* --- Line heights ----------------------------------------------------- */
+  --leading-tight: 1.08;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  /* --- Letter spacing --------------------------------------------------- */
+  --tracking-tightest: -0.02em;
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.04em;
+  --tracking-wider: 0.12em;
+  --tracking-widest: 0.34em;   /* the signature wordmark / eyebrow spacing */
+
+  /* --- Semantic roles --------------------------------------------------- */
+  --role-wordmark-family: var(--font-display);
+  --role-wordmark-weight: var(--weight-light);
+  --role-wordmark-tracking: var(--tracking-widest);
+
+  --role-display-family: var(--font-display);
+  --role-display-weight: var(--weight-light);
+
+  /* Glass display — the pixel-hero headline voice: serif italic + heavy sans,
+     filled with the animated glass shimmer (see .display-glass). */
+  --role-glass-serif-family: var(--font-serif);
+  --role-glass-serif-weight: var(--weight-regular);
+  --role-glass-sans-family: var(--font-body);
+  --role-glass-sans-weight: var(--weight-extrabold);
+
+  --role-eyebrow-family: var(--font-display);
+  --role-eyebrow-weight: var(--weight-medium);
+  --role-eyebrow-tracking: var(--tracking-widest);
+  --role-eyebrow-size: var(--text-xs);
+
+  --role-heading-family: var(--font-body);
+  --role-heading-weight: var(--weight-semibold);
+
+  --role-body-family: var(--font-body);
+  --role-body-weight: var(--weight-regular);
+  --role-body-size: var(--text-base);
+
+  --role-data-family: var(--font-mono);
+  --role-data-weight: var(--weight-medium);
+}
+
+/* ---- AInoia DS: tokens/spacing.css ---- */
+/* ==========================================================================
+   AInoia — Spacing, radii & layout tokens
+   8px base rhythm with a tight 4px sub-step.
+   ========================================================================== */
+
+:root {
+  /* --- Spacing scale ---------------------------------------------------- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* --- Radii ------------------------------------------------------------ */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
+  /* --- Layout ----------------------------------------------------------- */
+  --container-sm: 640px;
+  --container-md: 960px;
+  --container-lg: 1200px;
+  --container-xl: 1440px;
+  --gutter: var(--space-6);
+
+  /* --- Control sizing --------------------------------------------------- */
+  --control-h-sm: 32px;
+  --control-h-md: 40px;
+  --control-h-lg: 48px;
+  --icon-stroke: 1.5;        /* line-icon stroke width (thin, single weight) */
+}
+
+/* ---- AInoia DS: tokens/effects.css ---- */
+/* ==========================================================================
+   AInoia — Effects: shadows, glows, blur, motion
+   Light is the brand's material. Accents glow; surfaces stay matte.
+   ========================================================================== */
+
+:root {
+  /* --- Elevation (warm dark: shadows are deep + soft) ------------------- */
+  --shadow-sm: 0 1px 2px rgba(24, 18, 13, 0.45);
+  --shadow-md: 0 6px 18px rgba(24, 18, 13, 0.48);
+  --shadow-lg: 0 18px 42px rgba(24, 18, 13, 0.55);
+  --shadow-xl: 0 34px 80px rgba(24, 18, 13, 0.62);
+
+  /* --- Signature glows (warm tan / clay) -------------------------------- */
+  --glow-cyan: 0 0 24px rgba(192, 160, 128, 0.42);
+  --glow-cyan-sm: 0 0 12px rgba(192, 160, 128, 0.38);
+  --glow-violet: 0 0 24px rgba(179, 144, 111, 0.42);
+  --glow-balance: 0 0 0 1px rgba(192, 160, 128, 0.25), 0 0 28px rgba(192, 160, 128, 0.30), 0 0 40px rgba(179, 144, 111, 0.20);
+
+  /* --- Inner detailing -------------------------------------------------- */
+  --inset-hairline: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --inset-top-light: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* --- Glass: shimmer display + glass-raised controls (warm) ------------ */
+  /* Frosted glass headline fill — a moving warm-cream sweep clipped to text. */
+  --glass-shimmer: linear-gradient(135deg,
+      rgba(245,241,230,1) 0%, rgba(245,241,230,0.45) 25%, rgba(245,241,230,0.12) 45%,
+      rgba(245,241,230,0.95) 55%, rgba(245,241,230,0.22) 75%, rgba(245,241,230,1) 100%); /* @kind other */
+  --glass-text-stroke: 1.5px rgba(245, 241, 230, 0.28);
+  --glass-text-shadow: drop-shadow(0 15px 35px rgba(24,18,13,0.50)) drop-shadow(0 5px 10px rgba(24,18,13,0.30));
+  --dur-shimmer: 8s;      /* @kind other */
+  /* Glassy controls: inset top-light + layered warm deep drop */
+  --shadow-glass-raised: inset 0 1px 1px rgba(245,241,230,0.30), 0 2px 4px rgba(24,18,13,0.32), 0 12px 24px rgba(24,18,13,0.42);
+  --shadow-glass-flat: inset 0 1px 1px rgba(245,241,230,0.10), 0 2px 4px rgba(24,18,13,0.24), 0 12px 24px rgba(24,18,13,0.34);
+  --blur-glass: blur(14px) saturate(150%); /* @kind other */
+
+  /* --- Blur ------------------------------------------------------------- */
+  --blur-overlay: blur(18px) saturate(140%); /* @kind other */
+  --blur-subtle: blur(8px); /* @kind other */
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);     /* @kind other */ /* calm settle */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);  /* @kind other */
+  --ease-spark: cubic-bezier(0.16, 1.1, 0.3, 1);  /* @kind other */ /* gentle overshoot */
+  --dur-fast: 130ms;       /* @kind other */
+  --dur-base: 220ms;       /* @kind other */
+  --dur-slow: 420ms;       /* @kind other */
+  --dur-ambient: 6s;       /* @kind other */ /* ambient gradient drift */
+
+  /* --- Z-index ---------------------------------------------------------- */
+  --z-base: 1;          /* @kind other */
+  --z-sticky: 100;      /* @kind other */
+  --z-overlay: 800;     /* @kind other */
+  --z-modal: 900;       /* @kind other */
+  --z-toast: 1000;      /* @kind other */
+}
+
+/* Glass shimmer sweep (drives .display-glass; neutralized under reduced-motion) */
+@keyframes ainoia-shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: 0% center; }
+}
+
+/* Global selection + reduced-motion courtesy */
+::selection { background: var(--selection-bg); color: var(--fg-1); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---- AInoia DS: tokens/base.css ---- */
+/* ==========================================================================
+   AInoia — Base element styling
+   Opt-in primitives that apply the token system to raw HTML.
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--surface-page);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--role-body-size);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Wordmark / display helpers ------------------------------------------- */
+.codis-wordmark {
+  font-family: var(--role-wordmark-family);
+  font-weight: var(--role-wordmark-weight);
+  letter-spacing: var(--role-wordmark-tracking);
+  text-transform: uppercase;
+  color: var(--fg-1);
+}
+.codis-wordmark .ai {
+  background: var(--grad-balance);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.eyebrow {
+  font-family: var(--role-eyebrow-family);
+  font-weight: var(--role-eyebrow-weight);
+  letter-spacing: var(--role-eyebrow-tracking);
+  font-size: var(--role-eyebrow-size);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.display {
+  font-family: var(--role-display-family);
+  font-weight: var(--role-display-weight);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg-1);
+}
+
+.text-gradient {
+  background: var(--grad-balance);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Glass shimmer display — the pixel-hero headline voice ------------------ */
+/* Frosted, animated headline. Pair .serif (italic) and .sans (extrabold)
+   spans inside for the editorial serif-italic / heavy-sans rhythm. */
+.display-glass {
+  color: transparent;
+  background: var(--glass-shimmer);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-stroke: var(--glass-text-stroke);
+  filter: var(--glass-text-shadow);
+  animation: ainoia-shimmer var(--dur-shimmer) linear infinite;
+  line-height: var(--leading-tight);
+}
+.display-glass .serif {
+  font-family: var(--role-glass-serif-family);
+  font-weight: var(--role-glass-serif-weight);
+  font-style: italic;
+}
+.display-glass .sans {
+  font-family: var(--role-glass-sans-family);
+  font-weight: var(--role-glass-sans-weight);
+  letter-spacing: var(--tracking-tightest);
+}
+
+/* Glass controls — inset top-light + layered deep drop ------------------- */
+.btn-glass, .btn-glass-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--control-h-lg);
+  padding: 0 26px;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-body);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  border: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+}
+.btn-glass {
+  background: linear-gradient(to bottom, var(--cyan-bright), var(--cyan-deep));
+  color: #06121a;
+  box-shadow: var(--shadow-glass-raised);
+}
+.btn-glass-ghost {
+  background: linear-gradient(to bottom, rgba(58,50,44,0.82), rgba(58,50,44,1));
+  color: var(--fg-1);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-glass-flat);
+  -webkit-backdrop-filter: var(--blur-glass);
+  backdrop-filter: var(--blur-glass);
+}
+.btn-glass:hover, .btn-glass-ghost:hover { transform: scale(1.02); text-decoration: none; }
+.btn-glass:active, .btn-glass-ghost:active { transform: scale(0.98); }
+
+a { color: var(--text-link); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+code, kbd, samp { font-family: var(--font-mono); }
+
+</style>
+<style>
+  html { scroll-behavior: smooth; }
+  body { background: var(--surface-page); }
+  .bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: var(--grad-hero);
+  }
+  .bg::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(60% 45% at 50% -10%, rgba(192,160,128,0.16) 0%, transparent 70%);
+  }
+  .wrap { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; padding: 0 var(--space-6) var(--space-24); }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: var(--space-24) 0 var(--space-12); text-align: center; }
+  .hero .eyebrow { display: block; margin-bottom: var(--space-6); }
+  .hero h1 {
+    font-family: var(--font-display); font-weight: var(--weight-light);
+    font-size: clamp(32px, 6vw, var(--text-4xl)); line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight); color: var(--fg-1); margin: 0 0 var(--space-5);
+  }
+  .hero h1 em { font-style: normal; background: var(--grad-balance); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lede { font-size: var(--text-md); color: var(--text-muted); max-width: 54ch; margin: 0 auto; line-height: var(--leading-relaxed); }
+  .antithesis {
+    font-family: var(--font-display); font-weight: var(--weight-light);
+    font-size: var(--text-lg); color: var(--fg-2); margin: var(--space-8) 0 0; letter-spacing: var(--tracking-wide);
+  }
+  .facts { display: flex; justify-content: center; gap: var(--space-10); flex-wrap: wrap; margin-top: var(--space-10); }
+  .fact { text-align: center; }
+  .fact b { display: block; font-family: var(--font-mono); font-size: var(--text-xl); color: var(--cyan-bright); font-weight: var(--weight-medium); }
+  .fact span { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: var(--tracking-wider); color: var(--fg-4); }
+
+  /* ---------- Card ---------- */
+  .card {
+    background: var(--surface-card); border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl); padding: var(--space-8);
+    box-shadow: var(--shadow-lg); margin-bottom: var(--space-6);
+  }
+  .card h2 {
+    font-family: var(--font-display); font-weight: var(--weight-light);
+    font-size: var(--text-xl); color: var(--fg-1); margin: 0 0 var(--space-2); letter-spacing: var(--tracking-tight);
+  }
+  .card .sub { font-size: var(--text-sm); color: var(--text-muted); margin: 0 0 var(--space-6); line-height: var(--leading-relaxed); }
+  .consent { font-size: var(--text-sm); line-height: var(--leading-relaxed); color: var(--text-body); }
+  .consent p { margin: 0 0 var(--space-4); }
+  .consent strong { color: var(--fg-1); font-weight: var(--weight-semibold); }
+  .note {
+    border-left: 2px solid var(--cyan-deep); padding-left: var(--space-4);
+    font-size: var(--text-sm); color: var(--text-muted); margin: var(--space-5) 0;
+  }
+
+  /* ---------- Progress ---------- */
+  .progress-bar { position: sticky; top: 0; z-index: var(--z-sticky); background: var(--surface-page); padding: var(--space-4) 0 var(--space-5); margin-bottom: var(--space-6); }
+  .progress-track { height: 3px; background: var(--ink-600); border-radius: var(--radius-pill); overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: var(--grad-balance); box-shadow: var(--glow-cyan-sm); transition: width var(--dur-slow) var(--ease-out); }
+  .progress-meta { display: flex; justify-content: space-between; margin-top: var(--space-3); font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: var(--tracking-wider); color: var(--fg-4); }
+
+  /* ---------- Questions ---------- */
+  .q { padding: var(--space-6) 0; border-top: 1px solid var(--border-subtle); }
+  .q:first-of-type { border-top: 0; padding-top: 0; }
+  .q-label { display: block; font-size: var(--text-base); color: var(--fg-1); line-height: var(--leading-snug); margin-bottom: var(--space-2); }
+  .q-num { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--cyan-deep); margin-right: var(--space-2); }
+  .q-hint { font-size: var(--text-xs); color: var(--fg-4); margin-bottom: var(--space-4); }
+  .req { color: var(--danger); }
+
+  .opts { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-4); }
+  .opt {
+    display: flex; align-items: flex-start; gap: var(--space-3); cursor: pointer;
+    padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle); background: var(--ink-800);
+    font-size: var(--text-sm); color: var(--text-body); line-height: var(--leading-snug);
+    transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+  }
+  .opt:hover { border-color: var(--border-strong); background: var(--ink-600); }
+  .opt input { margin: 2px 0 0; accent-color: var(--cyan); width: 15px; height: 15px; flex: none; }
+  .opt:has(input:checked) { border-color: var(--border-glow); background: var(--ink-600); color: var(--fg-1); }
+
+  .likert { display: flex; gap: var(--space-2); margin-top: var(--space-4); flex-wrap: wrap; }
+  .lk { flex: 1 1 0; min-width: 46px; }
+  .lk input { position: absolute; opacity: 0; pointer-events: none; }
+  .lk span {
+    display: flex; align-items: center; justify-content: center; height: var(--control-h-md);
+    border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--ink-800);
+    font-family: var(--font-mono); font-size: var(--text-sm); color: var(--fg-3); cursor: pointer;
+    transition: all var(--dur-fast) var(--ease-out);
+  }
+  .lk.na { flex: 0 0 62px; }
+  .lk.na span { font-family: var(--font-body); font-size: var(--text-xs); }
+  .lk span:hover { border-color: var(--border-strong); color: var(--fg-1); }
+  .lk input:checked + span {
+    background: linear-gradient(to bottom, var(--cyan-bright), var(--cyan-deep));
+    color: #241a10; border-color: transparent; box-shadow: var(--glow-cyan-sm); font-weight: var(--weight-semibold);
+  }
+  .scale-ends { display: flex; justify-content: space-between; font-size: var(--text-2xs); color: var(--fg-4); margin-top: var(--space-2); }
+
+  /* ---------- Paired matrix ---------- */
+  .pair { padding: var(--space-5) 0; border-top: 1px solid var(--border-subtle); }
+  .pair:first-child { border-top: 0; }
+  .pair-title { font-size: var(--text-base); color: var(--fg-1); margin-bottom: var(--space-1); }
+  .pair-desc { font-size: var(--text-xs); color: var(--fg-4); margin-bottom: var(--space-4); }
+  .pair-row { display: grid; grid-template-columns: 92px 1fr; gap: var(--space-3); align-items: center; margin-bottom: var(--space-2); }
+  .pair-tag { font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: var(--tracking-wider); color: var(--fg-3); }
+  .pair-tag.now { color: var(--fg-3); }
+  .pair-tag.need { color: var(--cyan); }
+  .legend { display: flex; gap: var(--space-6); flex-wrap: wrap; font-size: var(--text-xs); color: var(--text-muted); margin-bottom: var(--space-6); padding: var(--space-4); background: var(--ink-800); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); }
+  .legend b { color: var(--fg-1); font-weight: var(--weight-semibold); }
+
+  /* ---------- Inputs ---------- */
+  input[type="text"], input[type="email"], textarea {
+    width: 100%; background: var(--ink-500); border: 1px solid var(--border-default);
+    border-radius: var(--radius-md); color: var(--fg-1); font-family: var(--font-body);
+    font-size: var(--text-sm); padding: 0 var(--space-4); height: var(--control-h-md);
+    transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  }
+  textarea { height: auto; min-height: 96px; padding: var(--space-3) var(--space-4); resize: vertical; line-height: var(--leading-normal); }
+  input:focus, textarea:focus { outline: none; border-color: var(--cyan-deep); box-shadow: 0 0 0 3px var(--focus-ring); }
+  input::placeholder, textarea::placeholder { color: var(--fg-4); }
+  .other-wrap { margin-top: var(--space-2); padding-left: var(--space-4); }
+  .other-wrap input { height: var(--control-h-sm); font-size: var(--text-xs); }
+
+  /* ---------- Maturity ---------- */
+  .mat { display: flex; flex-direction: column; gap: var(--space-3); margin-top: var(--space-5); }
+  .mat-row { display: grid; grid-template-columns: 1fr 74px 74px; gap: var(--space-3); align-items: center;
+    padding: var(--space-4); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--ink-800); }
+  .mat-lvl { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--cyan-deep); letter-spacing: var(--tracking-wide); }
+  .mat-name { font-size: var(--text-sm); color: var(--fg-1); }
+  .mat-desc { font-size: var(--text-xs); color: var(--fg-4); line-height: var(--leading-snug); margin-top: 2px; }
+  .mat-pick { display: flex; justify-content: center; }
+  .mat-head { display: grid; grid-template-columns: 1fr 74px 74px; gap: var(--space-3); padding: 0 var(--space-4);
+    font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: var(--tracking-wider); color: var(--fg-4); }
+  .mat-head span { text-align: center; }
+  .mat-head span:first-child { text-align: left; }
+
+  /* ---------- Nav ---------- */
+  .nav { display: flex; justify-content: space-between; gap: var(--space-4); margin-top: var(--space-8); }
+  .nav .spacer { flex: 1; }
+  .err { color: var(--danger); font-size: var(--text-sm); margin-top: var(--space-4); display: none; }
+  .err.on { display: block; }
+
+  /* ---------- Result ---------- */
+  .result-hero { text-align: center; padding: var(--space-6) 0 var(--space-8); }
+  .result-lvl { font-family: var(--font-display); font-weight: var(--weight-light); font-size: var(--text-5xl);
+    background: var(--grad-balance); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1; }
+  .result-name { font-family: var(--font-display); font-size: var(--text-xl); color: var(--fg-1); margin-top: var(--space-3); letter-spacing: var(--tracking-wide); }
+  .metric { margin: var(--space-5) 0; }
+  .metric-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--space-2); }
+  .metric-name { font-size: var(--text-sm); color: var(--fg-1); }
+  .metric-val { font-family: var(--font-mono); font-size: var(--text-md); color: var(--cyan-bright); }
+  .metric-track { height: 6px; background: var(--ink-600); border-radius: var(--radius-pill); overflow: hidden; }
+  .metric-fill { height: 100%; background: var(--grad-balance); border-radius: var(--radius-pill); transition: width var(--dur-slow) var(--ease-out); }
+  .metric-note { font-size: var(--text-xs); color: var(--fg-4); margin-top: var(--space-2); }
+  .gap-row { display: grid; grid-template-columns: 1fr 56px; gap: var(--space-3); align-items: center; padding: var(--space-3) 0; border-top: 1px solid var(--border-subtle); font-size: var(--text-sm); }
+  .gap-val { font-family: var(--font-mono); text-align: right; color: var(--warning); }
+
+  hr.rule { border: 0; border-top: 1px solid var(--border-subtle); margin: var(--space-8) 0; }
+  .footer { text-align: center; font-size: var(--text-xs); color: var(--fg-4); padding: var(--space-12) 0 0; line-height: var(--leading-relaxed); }
+  .hidden { display: none !important; }
+  @media (max-width: 560px) {
+    .card { padding: var(--space-5); }
+    .mat-row, .mat-head { grid-template-columns: 1fr 54px 54px; }
+    .pair-row { grid-template-columns: 1fr; gap: var(--space-1); }
+    .facts { gap: var(--space-6); }
+  }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section id="intro">
+    <div class="hero">
+      <span class="eyebrow">Дослідження · SE MBA · МІМ-Київ</span>
+      <h1>Індекс <em>ШІ-зрілості</em><br>організаційної культури</h1>
+      <p class="lede">Інструменти доступні всім. Системно ними користуються одиниці. Різницю робить не технологія, а культура — і її можна виміряти.</p>
+      <p class="antithesis">Не про інструменти. Про готовність.</p>
+      <div class="facts">
+        <div class="fact"><b>47</b><span>питань</span></div>
+        <div class="fact"><b>13</b><span>хвилин</span></div>
+        <div class="fact"><b>0</b><span>персональних даних</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Перед початком</h2>
+      <div class="consent">
+        <p><strong>Що це.</strong> Опитування вимірює, наскільки культура вашої компанії готова до системного використання штучного інтелекту: чи безпечно тут пробувати нове, чи є зрозумілі правила, і де саме розрив між тим, як ШІ використовується зараз, і тим, як міг би.</p>
+        <p><strong>Навіщо.</strong> Дані збираються для кваліфікаційної роботи програми SE MBA (Бізнес-школа МІМ-Київ) на тему трансформації організаційної культури в епоху ШІ. Узагальнені результати буде опубліковано у відкритому доступі.</p>
+        <p><strong>Що ми збираємо.</strong> Назву компанії — щоб порахувати індекс саме для вашої організації. Ваше ім'я, посаду, email чи IP-адресу ми не збираємо.</p>
+        <div class="note">
+          Індивідуальні відповіді не показуються керівництву — ніколи й ні в якому вигляді.
+          Компанія отримує лише агрегований звіт, і лише якщо анкету заповнили щонайменше <strong>5 осіб</strong>.
+          У тексті дослідження компанії не порівнюються й не ранжуються; галузеві дані подаються середніми по групах.
+        </div>
+        <p><strong>Добровільність.</strong> Ви можете припинити заповнення на будь-якому питанні. Незавершені анкети не надсилаються.</p>
+      </div>
+      <div class="opts" style="margin-top:var(--space-6)">
+        <label class="opt"><input type="checkbox" id="consent"><span>Я ознайомився / ознайомилася з умовами та погоджуюся взяти участь в опитуванні</span></label>
+      </div>
+      <div class="err" id="consentErr">Щоб продовжити, потрібна ваша згода.</div>
+      <div class="nav"><div class="spacer"></div><button class="btn-glass" id="startBtn">Почати опитування</button></div>
+    </div>
+  </section>
+
+  <!-- ============ FORM ============ -->
+  <section id="form" class="hidden">
+    <div class="progress-bar">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-meta"><span id="stepName">—</span><span id="stepCount">—</span></div>
+    </div>
+    <div id="stepHost"></div>
+    <div class="err" id="stepErr">Будь ласка, дайте відповідь на всі обов'язкові питання цього кроку.</div>
+    <div class="nav">
+      <button class="btn-glass-ghost" id="prevBtn">Назад</button>
+      <div class="spacer"></div>
+      <button class="btn-glass" id="nextBtn">Далі</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section id="result" class="hidden"></section>
+
+  <div class="footer">
+    Кваліфікаційна робота SE MBA · Бізнес-школа МІМ-Київ · 2026<br>
+    Дизайн-система <strong>AInoia</strong>
+  </div>
+</div>
+<script>
+/* =============================================================================
+   Індекс ШІ-зрілості організаційної культури — логіка анкети
+   Кваліфікаційна робота SE MBA, МІМ-Київ. Дизайн-система AInoia.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   Конфігурація збору відповідей.
+   Поки поля порожні — локальний режим: дані лишаються в браузері
+   й вивантажуються файлом. Заповніть обидва, щоб писати в Postgres.
+   ANON-ключ публічний за задумом: політики RLS дозволяють лише INSERT.
+   --------------------------------------------------------------------------- */
+const SUPABASE_URL = "";
+const SUPABASE_ANON_KEY = "";
+
+const LIKERT_ENDS = ["1 — категорично не згоден", "5 — повністю згоден"];
+
+/* --------------------------------------------------------------------------
+   Схема анкети
+   -------------------------------------------------------------------------- */
+const STEPS = [
+  {
+    name: "Компанія",
+    title: "Ваша компанія",
+    sub: "Назва потрібна, щоб порахувати індекс саме для вашої організації. Керівництву індивідуальні відповіді не передаються.",
+    questions: [
+      { id: "company", n: 1, type: "text", required: true,
+        label: "Назва компанії", placeholder: "Наприклад: ТОВ «Приклад»" },
+      { id: "industry", n: 2, type: "radio", required: true, other: true,
+        label: "Галузь, у якій працює компанія",
+        options: ["IT, розробка ПЗ, ІТ-послуги", "Кібербезпека, ІТ-дистрибуція, системна інтеграція",
+          "Фінанси, банки, страхування", "Виробництво, промисловість",
+          "Енергетика, інфраструктура, комунальні послуги", "Роздрібна торгівля, e-commerce, дистрибуція",
+          "Телеком, медіа, реклама", "Професійні послуги (консалтинг, юридичні, аудит, маркетинг)",
+          "Медицина, фарма, освіта, наука", "Транспорт, логістика, агро, будівництво",
+          "Державний сектор, некомерційні організації"] },
+      { id: "size", n: 3, type: "radio", required: true,
+        label: "Кількість співробітників",
+        options: ["До 10", "10–50", "51–250", "251–1000", "Понад 1000"] },
+      { id: "market", n: 4, type: "radio", required: true, other: true,
+        label: "Основний ринок компанії",
+        options: ["Україна", "ЄС / Велика Британія", "США / Канада", "Інші ринки", "Глобальний"] },
+      { id: "sensitivity", n: 5, type: "radio", required: true,
+        label: "Наскільки чутливі дані обробляє компанія?",
+        options: ["Дуже чутливі, є жорсткі регуляторні вимоги (персональні, медичні, фінансові, державна таємниця)",
+          "Помірно чутливі — комерційна таємниця, дані клієнтів", "Переважно нечутливі", "Не знаю"] }
+    ]
+  },
+  {
+    name: "Респондент",
+    title: "Ваша роль",
+    sub: "Без імені й посади. Ці дані потрібні лише для розрізів «керівники vs команда» та «новачки vs досвідчені».",
+    questions: [
+      { id: "function", n: 6, type: "radio", required: true, other: true,
+        label: "Ваш функціональний напрям",
+        options: ["Продажі, робота з клієнтами та партнерами",
+          "Технічний напрям, інженерія, виробництво, надання основної послуги",
+          "Маркетинг, комунікації, контент", "Фінанси, операції, адміністрування",
+          "Юридичний супровід, комплаєнс, ризики", "HR, People & Culture, навчання",
+          "IT-підтримка, інфраструктура, безпека", "Загальне керівництво, топ-менеджмент"] },
+      { id: "tenure", n: 7, type: "radio", required: true,
+        label: "Ваш стаж у цій компанії", options: ["До 1 року", "1–3 роки", "Понад 3 роки"] },
+      { id: "leads", n: 8, type: "radio", required: true,
+        label: "Чи є у вас підлеглі?",
+        options: ["Так, керую командою", "Так, керую керівниками", "Ні"] }
+    ]
+  },
+  {
+    name: "Практики",
+    title: "Як ви користуєтеся ШІ сьогодні",
+    sub: "Фактичний стан, без оцінок. Найкорисніші для дослідження — чесні відповіді.",
+    questions: [
+      { id: "freq", n: 9, type: "radio", required: true,
+        label: "Як часто ви використовуєте ШІ в робочих завданнях?",
+        options: ["Щодня, це вбудовано в мій робочий процес", "Кілька разів на тиждень",
+          "Кілька разів на місяць", "Пробував / пробувала, але не використовую регулярно", "Ніколи"] },
+      { id: "tools", n: 10, type: "checkbox", required: true, other: true,
+        label: "Які категорії інструментів ви використовуєте?", hint: "Можна обрати кілька",
+        options: ["Текстові LLM-чати (ChatGPT, Claude, Gemini тощо)",
+          "Асистенти, вбудовані в робочі програми (Copilot у пошті, документах, CRM)",
+          "Пошук по внутрішніх документах і базах знань (RAG, NotebookLM)",
+          "Автоматизація процесів (n8n, Make, Power Automate, скрипти)",
+          "Спеціалізовані інструменти (переклад, графіка, аналіз даних, генерація коду)",
+          "ШІ-функції всередині галузевого ПЗ, яким я користуюся",
+          "Не використовую жодного"] },
+      { id: "account", n: 11, type: "radio", required: true, other: true,
+        label: "Чиїм акаунтом ви користуєтеся для робочих завдань?",
+        options: ["Корпоративним, наданим компанією", "Особистим безкоштовним",
+          "Особистим платним, оплачую сам / сама", "Не користуюся"] },
+      { id: "saved", n: 12, type: "radio", required: true,
+        label: "Скільки приблизно годин на тиждень ви економите завдяки ШІ?",
+        options: ["Не економлю", "До 2 год", "2–5 год", "5–10 год", "Понад 10 год"] },
+      { id: "shadow", n: 13, type: "radio", required: true,
+        label: "Чи траплялося вам не повідомляти, що результат підготовлено за допомогою ШІ?",
+        options: ["Так, регулярно", "Так, кілька разів", "Ні", "Не використовую ШІ"] }
+    ]
+  },
+  {
+    name: "Процеси",
+    title: "Вісім робочих процесів",
+    sub: "Дві оцінки на процес: як є зараз і як мало б бути.",
+    legend: true,
+    pairs: {
+      id: "proc", startN: 14, custom: true,
+      items: [
+        ["Продажі та робота з клієнтами", "комунікація, персоналізовані пропозиції, підготовка зустрічей"],
+        ["Підготовка складних документів", "комерційні пропозиції, тендери, специфікації, розрахунки"],
+        ["Пошук інформації", "внутрішні бази знань, документація, регламенти, історія проєктів"],
+        ["Маркетинг і контент", "тексти, презентації, дослідження ринку, публікації"],
+        ["Юридичні документи й комплаєнс", "договори, NDA, перевірка відповідності вимогам"],
+        ["HR", "найм, онбординг, навчання, внутрішні комунікації"],
+        ["Фінанси, звітність, адміністрування", "аналітика, звіти, планування, рутинні операції"],
+        ["Основна діяльність компанії", "те, за що клієнт вам платить — розробка, виробництво, надання послуги"]
+      ]
+    }
+  },
+  {
+    name: "Безпека",
+    title: "Психологічна безпека в команді",
+    sub: "Адаптована шкала А. Едмондсон. Оцініть, наскільки твердження описує вашу команду.",
+    questions: [
+      { id: "ps1", n: 22, type: "likert", required: true,
+        label: "У нашій команді безпечно пробувати нові інструменти ШІ та пропонувати нестандартні підходи." },
+      { id: "ps2", n: 23, type: "likert", required: true,
+        label: "Якщо я припущуся помилки, спираючись на неточну відповідь ШІ, це сприймуть як привід навчитися, а не як підставу для покарання." },
+      { id: "ps3", n: 24, type: "likert", required: true, reverse: true,
+        label: "У нашій команді людині можуть поставити це в провину, якщо вона визнає, що чогось не знає або не вміє." },
+      { id: "ps4", n: 25, type: "likert", required: true,
+        label: "Я можу відкрито обговорити з керівником сумніви щодо доцільності або якості ШІ-рішення." },
+      { id: "ps5", n: 26, type: "likert", required: true, reverse: true,
+        label: "Порушити незручне питання про ризики ШІ — безпеку даних, якість, вплив на робочі місця — у нас складно." },
+      { id: "ps6", n: 27, type: "likert", required: true,
+        label: "Колеги не знецінюють тих, хто відкрито каже, що користується ШІ." },
+      { id: "ps7", n: 28, type: "likert", required: true, reverse: true,
+        label: "Я побоююся, що активне використання ШІ керівництво розцінить як небажання працювати самостійно." }
+    ]
+  },
+  {
+    name: "Лідерство",
+    title: "Лідерство, правила та обмін знаннями",
+    questions: [
+      { id: "gv1", n: 29, type: "likert", required: true,
+        label: "Керівництво компанії власним прикладом демонструє використання ШІ в роботі." },
+      { id: "gv2", n: 30, type: "likert", required: true, na: "Не знаю",
+        label: "У компанії є зрозумілі й доступні правила, які дані можна, а які не можна передавати в ШІ-сервіси." },
+      { id: "gv3", n: 31, type: "likert", required: true, na: true,
+        label: "Ці правила радше допомагають працювати, ніж просто забороняють." },
+      { id: "gv4", n: 32, type: "likert", required: true, reverse: true,
+        label: "Вимоги до безпеки та регулювання в нашій галузі радше стримують нас від використання ШІ, ніж дають перевагу." },
+      { id: "gv5", n: 33, type: "likert", required: true,
+        label: "Співробітники охоче діляться між собою вдалими промптами, знахідками та кейсами." },
+      { id: "gv6", n: 34, type: "likert", required: true,
+        label: "Я маю достатньо автономії, щоб самостійно вирішувати, як виконати своє завдання, зокрема із застосуванням ШІ." },
+      { id: "gv7", n: 35, type: "likert", required: true,
+        label: "Наші регламенти можна досить швидко змінити, якщо знайдено ефективніший спосіб роботи." },
+      { id: "gv8", n: 36, type: "likert", required: true,
+        label: "У компанії достатньо навчання й підтримки, щоб підвищувати свою ШІ-грамотність." }
+    ]
+  },
+  {
+    name: "Ефект",
+    title: "Що це дає",
+    sub: "Три виміри організаційної ефективності: операційний, управлінський, адаптивний.",
+    questions: [
+      { id: "ef1", n: 37, type: "likert", required: true, na: true,
+        label: "ШІ помітно скоротив час на рутинні завдання." },
+      { id: "ef2", n: 38, type: "likert", required: true, na: true,
+        label: "Завдяки ШІ рішення ухвалюються швидше або якісніше." },
+      { id: "ef3", n: 39, type: "likert", required: true, na: true,
+        label: "Компанія стала швидше вчитися й пробувати нове відтоді, як з'явилися інструменти ШІ." },
+      { id: "ef4", n: 40, type: "likert", required: true, na: true,
+        label: "Якість моєї роботи завдяки ШІ радше зросла, ніж знизилася." }
+    ]
+  },
+  {
+    name: "Зрілість",
+    title: "Рівень зрілості: зараз і ціль",
+    sub: "Оберіть по одному рівню в кожній колонці.",
+    maturity: true,
+    questions: [
+      { id: "confidence", n: 41, type: "likert", required: true,
+        label: "Наскільки ви впевнені, що компанія подолає цей розрив власними силами?" }
+    ]
+  },
+  {
+    name: "Бар'єри",
+    title: "Що заважає і що допомогло б",
+    questions: [
+      { id: "barriers", n: 42, type: "checkbox", required: true, max: 3, other: true,
+        label: "Що найбільше заважає вам використовувати ШІ системно?", hint: "До 3 варіантів",
+        options: ["Брак практичного навчання й прикладів під мої задачі",
+          "Незрозуміло, які дані можна завантажувати, а які ні",
+          "Недовіра до якості відповідей, потреба все перепровіряти",
+          "Немає корпоративного доступу до платних інструментів",
+          "ШІ не інтегрований у робочі системи", "Немає часу розбиратися",
+          "Консервативність процесів і позиція керівництва",
+          "Побоювання щодо впливу на мою роль у майбутньому",
+          "Етичні або репутаційні застереження", "Нічого не заважає"] },
+      { id: "support", n: 43, type: "checkbox", required: true, max: 2, other: true,
+        label: "Який формат підтримки був би найціннішим?", hint: "До 2 варіантів",
+        options: ["Навчання з практичного застосування та безпеки даних",
+          "Внутрішня база перевірених промптів і шаблонів",
+          "ШІ-помічник по внутрішній документації компанії",
+          "Офіційне право витрачати частину робочого часу на тестування ШІ",
+          "Чіткі письмові правила, що можна й чого не можна"] },
+      { id: "story", n: 44, type: "textarea",
+        label: "Опишіть один конкретний випадок, коли ШІ реально допоміг у роботі — або підвів.",
+        hint: "Необов'язково", placeholder: "Кілька речень достатньо" },
+      { id: "wish", n: 45, type: "textarea",
+        label: "Що одне ви змінили б у компанії, щоб працювати з ШІ було легше?",
+        hint: "Необов'язково", placeholder: "Одна зміна, найважливіша" }
+    ]
+  },
+  {
+    name: "Результат",
+    title: "Ваш результат",
+    sub: "Розрахунок відбувається у вашому браузері.",
+    questions: [
+      { id: "showResult", n: 46, type: "radio", required: true,
+        label: "Показати ваш персональний результат одразу після завершення?",
+        options: ["Так, показати рівень зрілості та мої індекси", "Ні, дякую"] },
+      { id: "email", n: 47, type: "text",
+        label: "Надіслати підсумковий звіт дослідження, коли він буде готовий?",
+        hint: "Необов'язково. Зберігається окремим списком, не пов'язаним з вашими відповідями.",
+        placeholder: "email" }
+    ]
+  }
+];
+
+const MATURITY = [
+  ["Опір / незнання", "ШІ майже не використовується, є скепсис і побоювання, системного бачення немає"],
+  ["Локальні осередки", "Окремі ентузіасти користуються самі, обміну досвідом і прозорих правил немає"],
+  ["Системна інтеграція", "Керівництво заохочує, є правила й навчання, ШІ вбудований у стандартні процеси"],
+  ["AI-Native", "ШІ — природний партнер у щоденній роботі, висока автономія, постійне навчання"]
+];
+
+/* --------------------------------------------------------------------------
+   Стан
+   -------------------------------------------------------------------------- */
+/* Сховище браузера може бути недоступним (приватне вікно, заблоковані дані сайтів). */
+const LS = {
+  get(k, d) { try { return localStorage.getItem(k) ?? d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+
+const A = JSON.parse(LS.get("aimat_answers", "{}"));
+let step = 0;
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const save = () => LS.set("aimat_answers", JSON.stringify(A));
+
+/* --------------------------------------------------------------------------
+   Рендер елементів
+   -------------------------------------------------------------------------- */
+function likertHtml(id, na, ends) {
+  const naLabel = typeof na === "string" ? na : "Н/З";
+  let h = '<div class="likert">';
+  for (let i = 1; i <= 5; i++) {
+    h += `<label class="lk"><input type="radio" name="${id}" value="${i}"${A[id] == i ? " checked" : ""}><span>${i}</span></label>`;
+  }
+  if (na) h += `<label class="lk na"><input type="radio" name="${id}" value="na"${A[id] === "na" ? " checked" : ""}><span>${esc(naLabel)}</span></label>`;
+  h += "</div>";
+  if (ends !== false) h += `<div class="scale-ends"><span>${LIKERT_ENDS[0]}</span><span>${LIKERT_ENDS[1]}</span></div>`;
+  return h;
+}
+
+function questionHtml(q) {
+  const req = q.required ? ' <span class="req">*</span>' : "";
+  let h = `<div class="q" data-qid="${q.id}"><label class="q-label"><span class="q-num">${q.n}</span>${esc(q.label)}${req}</label>`;
+  if (q.hint) h += `<div class="q-hint">${esc(q.hint)}</div>`;
+
+  if (q.type === "likert") {
+    h += likertHtml(q.id, q.na);
+  } else if (q.type === "radio" || q.type === "checkbox") {
+    const t = q.type === "radio" ? "radio" : "checkbox";
+    h += '<div class="opts">';
+    q.options.forEach((o, i) => {
+      const checked = q.type === "radio" ? A[q.id] === o : (A[q.id] || []).includes(o);
+      h += `<label class="opt"><input type="${t}" name="${q.id}" value="${esc(o)}"${checked ? " checked" : ""}><span>${esc(o)}</span></label>`;
+    });
+    if (q.other) {
+      const on = q.type === "radio" ? A[q.id] === "__other" : (A[q.id] || []).includes("__other");
+      h += `<label class="opt"><input type="${t}" name="${q.id}" value="__other"${on ? " checked" : ""}><span>Свій варіант</span></label>`;
+      h += `<div class="other-wrap"><input type="text" data-other="${q.id}" placeholder="Впишіть свій варіант" value="${esc(A[q.id + "_other"] || "")}"></div>`;
+    }
+    h += "</div>";
+  } else if (q.type === "text") {
+    h += `<input type="text" name="${q.id}" placeholder="${esc(q.placeholder || "")}" value="${esc(A[q.id] || "")}">`;
+  } else if (q.type === "textarea") {
+    h += `<textarea name="${q.id}" placeholder="${esc(q.placeholder || "")}">${esc(A[q.id] || "")}</textarea>`;
+  }
+  return h + "</div>";
+}
+
+function pairsHtml(cfg) {
+  let h = "";
+  cfg.items.forEach((it, i) => {
+    const n = cfg.startN + i;
+    h += `<div class="pair"><div class="pair-title"><span class="q-num">${n}</span>${esc(it[0])}</div>
+      <div class="pair-desc">${esc(it[1])}</div>
+      <div class="pair-row"><span class="pair-tag now">Зараз</span><div>${likertHtml("proc" + i + "_now", true, false)}</div></div>
+      <div class="pair-row"><span class="pair-tag need">Потрібно</span><div>${likertHtml("proc" + i + "_need", false, false)}</div></div></div>`;
+  });
+
+  h += `<div class="pair"><div class="pair-title">Свій процес</div>
+    <div class="pair-desc">Якщо у вашій роботі є важливий процес, якого немає в списку — впишіть його</div>
+    <input type="text" id="customProc" placeholder="Назва процесу" value="${esc((A.proc_custom || [{}])[0]?.name || "")}">
+    <div style="margin-top:var(--space-4)">
+      <div class="pair-row"><span class="pair-tag now">Зараз</span><div>${likertHtml("custom_now", true, false)}</div></div>
+      <div class="pair-row"><span class="pair-tag need">Потрібно</span><div>${likertHtml("custom_need", false, false)}</div></div>
+    </div></div>`;
+  return h;
+}
+
+function maturityHtml() {
+  let h = '<div class="mat-head"><span>Рівень</span><span>Зараз</span><span>Ціль</span></div><div class="mat">';
+  MATURITY.forEach((m, i) => {
+    const lvl = i + 1;
+    h += `<div class="mat-row">
+      <div><div class="mat-lvl">Рівень ${lvl}</div><div class="mat-name">${esc(m[0])}</div><div class="mat-desc">${esc(m[1])}</div></div>
+      <div class="mat-pick"><input type="radio" name="mat_now" value="${lvl}"${A.mat_now == lvl ? " checked" : ""} style="accent-color:var(--cyan);width:17px;height:17px"></div>
+      <div class="mat-pick"><input type="radio" name="mat_target" value="${lvl}"${A.mat_target == lvl ? " checked" : ""} style="accent-color:var(--cyan);width:17px;height:17px"></div>
+    </div>`;
+  });
+  return h + "</div>";
+}
+
+/* --------------------------------------------------------------------------
+   Рендер кроку
+   -------------------------------------------------------------------------- */
+function render() {
+  const s = STEPS[step];
+  let h = `<div class="card"><h2>${esc(s.title)}</h2>`;
+  if (s.sub) h += `<p class="sub">${esc(s.sub)}</p>`;
+  if (s.legend) {
+    h += `<div class="legend">
+      <span><b>Зараз</b> — наскільки ШІ фактично використовується у вашій компанії в цьому процесі</span>
+      <span><b>Потрібно</b> — наскільки він мав би використовуватися</span>
+      <span><b>Н/З</b> — процес не стосується вашої роботи</span>
+      <span><b>Шкала:</b> 1 — не використовується взагалі · 5 — використовується повною мірою</span></div>`;
+  }
+  if (s.pairs) h += pairsHtml(s.pairs);
+  if (s.maturity) h += maturityHtml();
+  (s.questions || []).forEach((q) => { h += questionHtml(q); });
+  h += "</div>";
+
+  $("#stepHost").innerHTML = h;
+  $("#progressFill").style.width = ((step + 1) / STEPS.length * 100) + "%";
+  $("#stepName").textContent = s.name;
+  $("#stepCount").textContent = `Крок ${step + 1} з ${STEPS.length}`;
+  $("#prevBtn").style.visibility = step === 0 ? "hidden" : "visible";
+  $("#nextBtn").textContent = step === STEPS.length - 1 ? "Завершити" : "Далі";
+  $("#stepErr").classList.remove("on");
+  window.scrollTo({ top: 0, behavior: "instant" });
+  bind();
+}
+
+function bind() {
+  $("#stepHost").querySelectorAll("input, textarea").forEach((el) => {
+    el.addEventListener("change", collect);
+    if (el.type === "text" || el.tagName === "TEXTAREA") el.addEventListener("input", collect);
+  });
+}
+
+function collect() {
+  const host = $("#stepHost");
+  host.querySelectorAll('input[type="radio"]:checked').forEach((el) => { A[el.name] = el.value; });
+  host.querySelectorAll('input[type="checkbox"]').forEach((el) => {
+    if (!el.name) return;
+    const cur = new Set(A[el.name] || []);
+    el.checked ? cur.add(el.value) : cur.delete(el.value);
+    A[el.name] = [...cur];
+  });
+  host.querySelectorAll("input[data-other]").forEach((el) => { A[el.dataset.other + "_other"] = el.value.trim(); });
+  host.querySelectorAll('input[type="text"][name], textarea[name]').forEach((el) => { A[el.name] = el.value.trim(); });
+  const cp = host.querySelector("#customProc");
+  if (cp) A.proc_custom = cp.value.trim() ? [{ name: cp.value.trim() }] : [];
+  enforceMax();
+  save();
+}
+
+function enforceMax() {
+  const s = STEPS[step];
+  (s.questions || []).forEach((q) => {
+    if (q.type !== "checkbox" || !q.max) return;
+    const sel = A[q.id] || [];
+    const boxes = $("#stepHost").querySelectorAll(`input[name="${q.id}"]`);
+    boxes.forEach((b) => { b.disabled = sel.length >= q.max && !b.checked; });
+  });
+}
+
+function validate() {
+  const s = STEPS[step];
+  let ok = true;
+  (s.questions || []).forEach((q) => {
+    if (!q.required) return;
+    const v = A[q.id];
+    if (v === undefined || v === "" || (Array.isArray(v) && v.length === 0)) ok = false;
+  });
+  if (s.pairs) {
+    s.pairs.items.forEach((_, i) => { if (!A["proc" + i + "_now"] || !A["proc" + i + "_need"]) ok = false; });
+  }
+  if (s.maturity && (!A.mat_now || !A.mat_target)) ok = false;
+  return ok;
+}
+
+/* --------------------------------------------------------------------------
+   Розрахунок
+   -------------------------------------------------------------------------- */
+const val = (id, rev) => {
+  const v = A[id];
+  if (v === undefined || v === "na") return null;
+  const n = Number(v);
+  return rev ? 6 - n : n;
+};
+
+function meanOf(list) {
+  const nums = list.map((x) => x).filter((x) => x !== null);
+  return nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : null;
+}
+
+function score() {
+  const ps = meanOf([val("ps1"), val("ps2"), val("ps3", true), val("ps4"), val("ps5", true), val("ps6"), val("ps7", true)]);
+  const gv = meanOf([val("gv1"), val("gv2"), val("gv3"), val("gv4", true), val("gv5"), val("gv6"), val("gv7"), val("gv8")]);
+  const ef = meanOf([val("ef1"), val("ef2"), val("ef3"), val("ef4")]);
+
+  const gaps = [];
+  STEPS.find((s) => s.pairs).pairs.items.forEach((it, i) => {
+    const now = val("proc" + i + "_now"), need = val("proc" + i + "_need");
+    if (now !== null && need !== null) gaps.push({ name: it[0], gap: need - now, now, need });
+  });
+  gaps.sort((a, b) => b.gap - a.gap);
+
+  const matNow = Number(A.mat_now), matTarget = Number(A.mat_target);
+  const composite = meanOf([ps, gv, ef]);
+  return { ps, gv, ef, gaps, matNow, matTarget, composite };
+}
+
+/* --------------------------------------------------------------------------
+   Результат
+   -------------------------------------------------------------------------- */
+function metric(name, v, note) {
+  if (v === null) return "";
+  return `<div class="metric">
+    <div class="metric-top"><span class="metric-name">${esc(name)}</span><span class="metric-val">${v.toFixed(2)} / 5</span></div>
+    <div class="metric-track"><div class="metric-fill" style="width:${(v / 5 * 100).toFixed(0)}%"></div></div>
+    <div class="metric-note">${esc(note)}</div></div>`;
+}
+
+function psNote(v) {
+  if (v === null) return "";
+  if (v >= 4) return "Висока: у команді безпечно помилятися й ставити незручні питання — головна передумова масштабування ШІ вже є.";
+  if (v >= 3) return "Помірна: базова довіра є, але страх помилки все ще стримує експерименти.";
+  return "Низька: страх помилки блокує відкриті експерименти. Це головний блокатор, з якого варто починати.";
+}
+
+function showResult() {
+  const r = score();
+  const skip = A.showResult && A.showResult.startsWith("Ні");
+  let h = "";
+
+  if (skip) {
+    h = `<div class="card"><h2>Дякуємо</h2><p class="sub">Ваші відповіді збережено. Вони будуть використані лише в агрегованому вигляді.</p>
+      <div class="metric-note" id="sendStatus"></div>
+      <div class="nav"><div class="spacer"></div><button class="btn-glass-ghost" id="dl">Завантажити мої відповіді</button></div></div>`;
+  } else {
+    const m = MATURITY[r.matNow - 1] || ["—", ""];
+    h = `<div class="card">
+      <div class="result-hero">
+        <span class="eyebrow">Ваша оцінка рівня зрілості</span>
+        <div class="result-lvl">${r.matNow}</div>
+        <div class="result-name">${esc(m[0])}</div>
+        <p class="lede" style="margin-top:var(--space-4);font-size:var(--text-sm)">${esc(m[1])}</p>
+        ${r.matTarget > r.matNow ? `<p class="antithesis" style="font-size:var(--text-base)">Ціль — рівень ${r.matTarget}. Розрив: ${r.matTarget - r.matNow} ${r.matTarget - r.matNow === 1 ? "рівень" : "рівні"}.</p>` : ""}
+      </div>
+      <hr class="rule">
+      <h2>Три індекси</h2>
+      <p class="sub">Розраховано за вашими відповідями. Це індивідуальна оцінка, а не оцінка компанії — компанійний індекс формується з відповідей усіх колег.</p>
+      ${metric("Психологічна безпека", r.ps, psNote(r.ps))}
+      ${metric("Лідерство та правила", r.gv, "Наскільки керівництво, правила й обмін знаннями підтримують використання ШІ.")}
+      ${metric("Сприйнята ефективність", r.ef, "Операційний, управлінський і адаптивний ефект разом.")}`;
+
+    if (r.gaps.length) {
+      h += `<hr class="rule"><h2>Найбільші розриви за процесами</h2>
+        <p class="sub">Різниця між «як мало б бути» і «як є». Що більший розрив — то вища віддача від змін саме тут.</p>`;
+      r.gaps.slice(0, 5).forEach((g) => {
+        h += `<div class="gap-row"><span>${esc(g.name)}</span><span class="gap-val">+${g.gap.toFixed(1)}</span></div>`;
+      });
+    }
+
+    h += `<hr class="rule">
+      <p class="sub">Дякуємо за участь. Ваші відповіді збережено й будуть використані лише в агрегованому вигляді.</p>
+      <div class="metric-note" id="sendStatus"></div>
+      <div class="nav"><div class="spacer"></div><button class="btn-glass-ghost" id="dl">Завантажити мої відповіді</button></div>
+    </div>`;
+  }
+
+  $("#form").classList.add("hidden");
+  $("#result").classList.remove("hidden");
+  $("#result").innerHTML = h;
+  const dl = $("#dl");
+  if (dl) dl.addEventListener("click", download);
+}
+
+function setSendStatus(state) {
+  const el = $("#sendStatus");
+  if (!el) return;
+  if (state === "sent") el.textContent = "Відповіді надіслано.";
+  else if (state === "failed") el.textContent = "Не вдалося надіслати відповіді. Скористайтеся кнопкою нижче й надішліть файл автору дослідження.";
+}
+
+function payload() {
+  return { answers: A, scores: score(), submitted_at: new Date().toISOString(), version: "3.0" };
+}
+
+function download() {
+  const blob = new Blob([JSON.stringify(payload(), null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ai-maturity-" + (A.company || "anon").replace(/[^\wа-яїієґА-ЯЇІЄҐ]+/gi, "_") + ".json";
+  a.click();
+}
+
+/* Розгортає вибір «Свій варіант» у вписаний респондентом текст. */
+function pick(id) {
+  const v = A[id];
+  if (v === "__other") return (A[id + "_other"] || "").trim() || "Свій варіант";
+  return v || null;
+}
+
+/* Рядок для таблиці public.responses. */
+function row() {
+  const s = score();
+  const answers = Object.assign({}, A);
+  delete answers.email;          // email ніколи не потрапляє в анкету
+  return {
+    company: (A.company || "").trim(),
+    industry: pick("industry"),
+    company_size: A.size || null,
+    market: pick("market"),
+    sensitivity: A.sensitivity || null,
+    fn: pick("function"),
+    tenure: A.tenure || null,
+    leads: A.leads || null,
+    usage_freq: A.freq || null,
+    account_type: pick("account"),
+    hours_saved: A.saved || null,
+    shadow_ai: A.shadow || null,
+    ps_index: s.ps === null ? null : Number(s.ps.toFixed(2)),
+    gv_index: s.gv === null ? null : Number(s.gv.toFixed(2)),
+    ef_index: s.ef === null ? null : Number(s.ef.toFixed(2)),
+    maturity_now: s.matNow || null,
+    maturity_target: s.matTarget || null,
+    answers: answers,
+    scores: s,
+    version: "3.1"
+  };
+}
+
+function post(table, body) {
+  return fetch(SUPABASE_URL + "/rest/v1/" + table, {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+      "Content-Type": "application/json",
+      "Prefer": "return=minimal"
+    },
+    body: JSON.stringify(body)
+  }).then((r) => { if (!r.ok) throw new Error(r.status + " " + r.statusText); return true; });
+}
+
+function submit() {
+  const data = payload();
+  const store = JSON.parse(LS.get("aimat_submissions", "[]"));
+  store.push(data);
+  LS.set("aimat_submissions", JSON.stringify(store));
+
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return Promise.resolve("local");
+
+  const email = (A.email || "").trim();
+  const jobs = [post("responses", row())];
+  if (email) jobs.push(post("report_subscribers", { email: email }).catch(() => true));
+  return Promise.all(jobs).then(() => "sent").catch(() => "failed");
+}
+
+/* --------------------------------------------------------------------------
+   Навігація
+   -------------------------------------------------------------------------- */
+$("#startBtn").addEventListener("click", () => {
+  if (!$("#consent").checked) { $("#consentErr").classList.add("on"); return; }
+  $("#intro").classList.add("hidden");
+  $("#form").classList.remove("hidden");
+  render();
+});
+
+$("#nextBtn").addEventListener("click", () => {
+  collect();
+  if (!validate()) { $("#stepErr").classList.add("on"); return; }
+  if (step === STEPS.length - 1) {
+    const p = submit();
+    showResult();
+    p.then(setSendStatus);
+    return;
+  }
+  step++; render();
+});
+
+$("#prevBtn").addEventListener("click", () => { collect(); if (step > 0) { step--; render(); } });
+
+</script>
+</body>
+</html>
