@@ -543,7 +543,11 @@ code, kbd, samp { font-family: var(--font-mono); }
   }
   .opt:hover { box-shadow: var(--soft-out-sm); }
   .opt input { margin: 2px 0 0; accent-color: var(--cyan); width: 15px; height: 15px; flex: none; }
-  .opt:has(input:checked) { box-shadow: var(--soft-in-sm); color: var(--fg-1); }
+  .opt:has(input:checked) {
+    background: linear-gradient(145deg, #241e19, #2f2822);
+    box-shadow: var(--soft-in-sm), 0 0 0 1px rgba(192,160,128,0.24);
+    color: var(--fg-1);
+  }
 
   .likert { display: flex; gap: var(--space-3); margin-top: var(--space-4); flex-wrap: wrap; }
   .lk { flex: 1 1 0; min-width: 46px; }
@@ -559,8 +563,10 @@ code, kbd, samp { font-family: var(--font-mono); }
   .lk.na span { font-family: var(--font-body); font-size: var(--text-xs); }
   .lk span:hover { box-shadow: var(--soft-out-sm); color: var(--fg-1); }
   .lk input:checked + span {
-    box-shadow: var(--soft-in-sm); color: var(--cyan-bright);
-    font-weight: var(--weight-semibold); text-shadow: 0 0 14px rgba(214,189,156,0.45);
+    background: linear-gradient(145deg, #241e19, #2f2822);
+    box-shadow: var(--soft-in), 0 0 0 1px rgba(192,160,128,0.28);
+    color: var(--cyan-bright); font-weight: var(--weight-semibold);
+    text-shadow: 0 0 16px rgba(214,189,156,0.55);
   }
   .lk input:focus-visible + span { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   .scale-ends { display: flex; justify-content: space-between; font-size: var(--text-2xs); color: var(--fg-4); margin-top: var(--space-3); }
