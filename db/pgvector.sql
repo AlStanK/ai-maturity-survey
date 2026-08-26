@@ -42,7 +42,7 @@ alter table public.answer_embeddings enable row level security;
 do $$
 declare r text;
 begin
-  foreach r in array array['anon','authenticated'] loop
+  foreach r in array array['anon','authenticated','web_anon'] loop
     if exists (select 1 from pg_roles where rolname = r) then
       execute format('revoke all on public.answer_embeddings from %I', r);
     end if;
@@ -100,7 +100,7 @@ where coalesce(trim(r.answers ->> 'wish'), '') <> ''
 do $$
 declare r text;
 begin
-  foreach r in array array['anon','authenticated'] loop
+  foreach r in array array['anon','authenticated','web_anon'] loop
     if exists (select 1 from pg_roles where rolname = r) then
       execute format('revoke all on public.v_pending_embeddings from %I', r);
     end if;

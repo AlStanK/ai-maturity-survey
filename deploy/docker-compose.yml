@@ -1,0 +1,90 @@
+# =============================================================================
+# Свій Postgres + PostgREST для анкети ШІ-зрілості.
+#
+#   docker compose up -d                      база + API
+#   docker compose --profile tls up -d        плюс Caddy з автоматичним TLS
+#   docker compose --profile bi  up -d        плюс Metabase
+#
+# Перед першим запуском: cp .env.example .env і заповнити паролі.
+# =============================================================================
+
+name: ai-maturity
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      AUTHENTICATOR_PASSWORD: ${AUTHENTICATOR_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./01-roles.sh:/docker-entrypoint-initdb.d/01-roles.sh:ro
+      - ../db/schema.sql:/docker-entrypoint-initdb.d/02-schema.sql:ro
+      - ../db/pgvector.sql:/docker-entrypoint-initdb.d/03-pgvector.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    # Порт назовні не публікуємо: до бази ходять лише сусідні контейнери.
+    # Для локального psql розкоментуйте:
+    # ports: ["5432:5432"]
+
+  api:
+    image: postgrest/postgrest:v12.2.3
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${AUTHENTICATOR_PASSWORD}@db:5432/${POSTGRES_DB}
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_ANON_ROLE: web_anon
+      PGRST_SERVER_PORT: 3000
+      # Домени, з яких дозволено звертатися. Через кому, без пробілів.
+      PGRST_SERVER_CORS_ALLOWED_ORIGINS: ${CORS_ORIGINS}
+      # Схема API назовні не публікується
+      PGRST_OPENAPI_MODE: disabled
+      PGRST_DB_POOL: 10
+    ports:
+      - "${API_PORT:-3000}:3000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    profiles: ["tls"]
+    depends_on: [api]
+    environment:
+      API_DOMAIN: ${API_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+
+  metabase:
+    image: metabase/metabase:latest
+    restart: unless-stopped
+    profiles: ["bi"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: ${POSTGRES_DB}
+      MB_DB_PORT: 5432
+      MB_DB_USER: ${POSTGRES_USER}
+      MB_DB_PASS: ${POSTGRES_PASSWORD}
+      MB_DB_HOST: db
+    ports:
+      - "${METABASE_PORT:-3001}:3000"
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

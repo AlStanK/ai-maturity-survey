@@ -1,0 +1,14 @@
+# Автоматичний TLS від Let's Encrypt.
+# Потрібен домен, A-запис якого вказує на цей сервер, і відкриті порти 80 та 443.
+{$API_DOMAIN} {
+	encode gzip
+
+	# Заголовки CORS віддає сам PostgREST — Caddy лише проксіює.
+	reverse_proxy api:3000
+
+	header {
+		-Server
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+	}
+}

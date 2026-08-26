@@ -72,17 +72,24 @@ create table if not exists public.report_subscribers (
 alter table public.responses          enable row level security;
 alter table public.report_subscribers enable row level security;
 
-drop policy if exists responses_anon_insert on public.responses;
-create policy responses_anon_insert
-  on public.responses for insert
-  to anon
-  with check (true);
+-- Роль анонімного відвідувача називається по-різному залежно від того,
+-- де крутиться база: anon у Supabase, web_anon у типовій конфігурації
+-- PostgREST. Політики створюємо для тієї ролі, яка реально існує.
+do $$
+declare r text;
+begin
+  foreach r in array array['anon','web_anon'] loop
+    if exists (select 1 from pg_roles where rolname = r) then
+      execute format('drop policy if exists responses_insert_%I on public.responses', r);
+      execute format(
+        'create policy responses_insert_%I on public.responses for insert to %I with check (true)', r, r);
 
-drop policy if exists subscribers_anon_insert on public.report_subscribers;
-create policy subscribers_anon_insert
-  on public.report_subscribers for insert
-  to anon
-  with check (true);
+      execute format('drop policy if exists subscribers_insert_%I on public.report_subscribers', r);
+      execute format(
+        'create policy subscribers_insert_%I on public.report_subscribers for insert to %I with check (true)', r, r);
+    end if;
+  end loop;
+end $$;
 
 -- Політик SELECT / UPDATE / DELETE для anon свідомо НЕМАЄ.
 -- Будь-яка спроба прочитати таблицю публічним ключем поверне порожній набір.
@@ -163,7 +170,7 @@ comment on view public.v_process_gaps is
 do $$
 declare r text;
 begin
-  foreach r in array array['anon','authenticated'] loop
+  foreach r in array array['anon','authenticated','web_anon'] loop
     if exists (select 1 from pg_roles where rolname = r) then
       execute format('revoke all on public.v_company_summary    from %I', r);
       execute format('revoke all on public.v_industry_benchmark from %I', r);
@@ -173,8 +180,12 @@ begin
     end if;
   end loop;
 
-  if exists (select 1 from pg_roles where rolname = 'anon') then
-    grant insert on public.responses          to anon;
-    grant insert on public.report_subscribers to anon;
-  end if;
+  -- Роль анонімного відвідувача називається по-різному:
+  -- anon у Supabase, web_anon у типовій конфігурації PostgREST.
+  foreach r in array array['anon','web_anon'] loop
+    if exists (select 1 from pg_roles where rolname = r) then
+      execute format('grant insert on public.responses          to %I', r);
+      execute format('grant insert on public.report_subscribers to %I', r);
+    end if;
+  end loop;
 end $$;
