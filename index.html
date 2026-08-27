@@ -585,6 +585,9 @@ code, kbd, samp { font-family: var(--font-mono); }
     border-radius: var(--radius-lg); box-shadow: var(--soft-in-sm);
   }
   .legend b { color: var(--fg-1); font-weight: var(--weight-semibold); }
+  .anchors { display: grid; gap: var(--space-1); margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid rgba(255,242,224,0.05); }
+  .anchors span { font-size: var(--text-2xs); color: var(--fg-4); }
+  .anchors span b { color: var(--fg-2); font-weight: var(--weight-semibold); }
 
   /* ---------- Inputs ---------- */
   input[type="text"], input[type="email"], textarea {
@@ -684,8 +687,8 @@ code, kbd, samp { font-family: var(--font-mono); }
       <p class="lede">Інструменти доступні всім. Системно ними користуються одиниці. Різницю робить не технологія, а культура — і її можна виміряти.</p>
       <p class="antithesis">Не про інструменти. Про готовність.</p>
       <div class="facts">
-        <div class="fact"><b>47</b><span>питань</span></div>
-        <div class="fact"><b>13</b><span>хвилин</span></div>
+        <div class="fact"><b>49</b><span>питань</span></div>
+        <div class="fact"><b>14</b><span>хвилин</span></div>
         <div class="fact"><b>0</b><span>персональних даних</span></div>
       </div>
     </div>
@@ -752,6 +755,35 @@ const API_KEY = "";
 
 const LIKERT_ENDS = ["1 — категорично не згоден", "5 — повністю згоден"];
 
+/* Поведінкові якорі для шкали використання ШІ в процесах (Блок «Процеси»).
+   Без них «оцініть від 1 до 5» кожен розуміє по-своєму: якорі прив'язують
+   бал до спостережуваної практики, а не до самовідчуття. */
+const PROC_ANCHORS = [
+  ["1", "не використовується"],
+  ["2", "окремі люди епізодично, кожен по-своєму"],
+  ["3", "регулярно користується частина команди"],
+  ["4", "стандартний спосіб роботи для більшості"],
+  ["5", "вбудовано в процес і робочі системи"]
+];
+const PROC_ENDS = ["1 — не використовується", "5 — вбудовано в процес"];
+
+/* Варіанти питань про охоплення й обізнаність — порядок задає бал 0…4
+   при розрахунку достовірності оцінки. */
+const SCOPE_OPTS = [
+  "Переважно власну команду",
+  "Власний департамент або функцію",
+  "Кілька функцій",
+  "Більшість організації",
+  "Організацію в цілому"
+];
+const AWARENESS_OPTS = [
+  "Практично не маю інформації",
+  "Знаю окремі приклади",
+  "Розумію основні ініціативи з ШІ",
+  "Добре знаю більшість ключових ініціатив",
+  "Безпосередньо залучений / залучена до впровадження ШІ"
+];
+
 /* --------------------------------------------------------------------------
    Схема анкети
    -------------------------------------------------------------------------- */
@@ -786,7 +818,7 @@ const STEPS = [
   {
     name: "Респондент",
     title: "Ваша роль",
-    sub: "Без імені й посади. Ці дані потрібні лише для розрізів «керівники vs команда» та «новачки vs досвідчені».",
+    sub: "Без імені й посади. Ці дані потрібні для розрізів «керівники vs команда», «новачки vs досвідчені» — і щоб знати, наскільки широко ви бачите компанію.",
     questions: [
       { id: "function", n: 6, type: "radio", required: true, other: true,
         label: "Ваш функціональний напрям",
@@ -799,7 +831,14 @@ const STEPS = [
         label: "Ваш стаж у цій компанії", options: ["До 1 року", "1–3 роки", "Понад 3 роки"] },
       { id: "leads", n: 8, type: "radio", required: true,
         label: "Чи є у вас підлеглі?",
-        options: ["Так, керую командою", "Так, керую керівниками", "Ні"] }
+        options: ["Так, керую командою", "Так, керую керівниками", "Ні"] },
+      { id: "scope", n: 9, type: "radio", required: true,
+        label: "Яку частину організації ви знаєте достатньо добре, щоб оцінювати?",
+        hint: "Далі будуть питання про компанію загалом. Ця відповідь показує, наскільки широка ваша точка огляду — правильної відповіді немає.",
+        options: SCOPE_OPTS },
+      { id: "awareness", n: 10, type: "radio", required: true,
+        label: "Наскільки ви обізнані про те, як ШІ використовується у вашій компанії?",
+        options: AWARENESS_OPTS }
     ]
   },
   {
@@ -807,11 +846,11 @@ const STEPS = [
     title: "Як ви користуєтеся ШІ сьогодні",
     sub: "Фактичний стан, без оцінок. Найкорисніші для дослідження — чесні відповіді.",
     questions: [
-      { id: "freq", n: 9, type: "radio", required: true,
+      { id: "freq", n: 11, type: "radio", required: true,
         label: "Як часто ви використовуєте ШІ в робочих завданнях?",
         options: ["Щодня, це вбудовано в мій робочий процес", "Кілька разів на тиждень",
           "Кілька разів на місяць", "Пробував / пробувала, але не використовую регулярно", "Ніколи"] },
-      { id: "tools", n: 10, type: "checkbox", required: true, other: true,
+      { id: "tools", n: 12, type: "checkbox", required: true, other: true,
         label: "Які категорії інструментів ви використовуєте?", hint: "Можна обрати кілька",
         options: ["Текстові LLM-чати (ChatGPT, Claude, Gemini тощо)",
           "Асистенти, вбудовані в робочі програми (Copilot у пошті, документах, CRM)",
@@ -820,14 +859,15 @@ const STEPS = [
           "Спеціалізовані інструменти (переклад, графіка, аналіз даних, генерація коду)",
           "ШІ-функції всередині галузевого ПЗ, яким я користуюся",
           "Не використовую жодного"] },
-      { id: "account", n: 11, type: "radio", required: true, other: true,
+      { id: "account", n: 13, type: "radio", required: true, other: true,
         label: "Чиїм акаунтом ви користуєтеся для робочих завдань?",
         options: ["Корпоративним, наданим компанією", "Особистим безкоштовним",
           "Особистим платним, оплачую сам / сама", "Не користуюся"] },
-      { id: "saved", n: 12, type: "radio", required: true,
+      { id: "saved", n: 14, type: "radio", required: true,
         label: "Скільки приблизно годин на тиждень ви економите завдяки ШІ?",
         options: ["Не економлю", "До 2 год", "2–5 год", "5–10 год", "Понад 10 год"] },
-      { id: "shadow", n: 13, type: "radio", required: true,
+      { id: "shadow", n: 15, type: "radio", required: true,
+        hint: "Так роблять у більшості компаній, і це не порушення. Питання потрібне, щоб оцінити масштаб неформального використання — відповідь анонімна.",
         label: "Чи траплялося вам не повідомляти, що результат підготовлено за допомогою ШІ?",
         options: ["Так, регулярно", "Так, кілька разів", "Ні", "Не використовую ШІ"] }
     ]
@@ -838,7 +878,7 @@ const STEPS = [
     sub: "Дві оцінки на процес: як є зараз і як мало б бути.",
     legend: true,
     pairs: {
-      id: "proc", startN: 14, custom: true,
+      id: "proc", startN: 16, custom: true,
       items: [
         ["Продажі та робота з клієнтами", "комунікація, персоналізовані пропозиції, підготовка зустрічей"],
         ["Підготовка складних документів", "комерційні пропозиції, тендери, специфікації, розрахунки"],
@@ -856,19 +896,19 @@ const STEPS = [
     title: "Психологічна безпека в команді",
     sub: "Адаптована шкала А. Едмондсон. Оцініть, наскільки твердження описує вашу команду.",
     questions: [
-      { id: "ps1", n: 22, type: "likert", required: true,
+      { id: "ps1", n: 24, type: "likert", required: true,
         label: "У нашій команді безпечно пробувати нові інструменти ШІ та пропонувати нестандартні підходи." },
-      { id: "ps2", n: 23, type: "likert", required: true,
+      { id: "ps2", n: 25, type: "likert", required: true,
         label: "Якщо я припущуся помилки, спираючись на неточну відповідь ШІ, це сприймуть як привід навчитися, а не як підставу для покарання." },
-      { id: "ps3", n: 24, type: "likert", required: true, reverse: true,
+      { id: "ps3", n: 26, type: "likert", required: true, reverse: true,
         label: "У нашій команді людині можуть поставити це в провину, якщо вона визнає, що чогось не знає або не вміє." },
-      { id: "ps4", n: 25, type: "likert", required: true,
+      { id: "ps4", n: 27, type: "likert", required: true,
         label: "Я можу відкрито обговорити з керівником сумніви щодо доцільності або якості ШІ-рішення." },
-      { id: "ps5", n: 26, type: "likert", required: true, reverse: true,
+      { id: "ps5", n: 28, type: "likert", required: true, reverse: true,
         label: "Порушити незручне питання про ризики ШІ — безпеку даних, якість, вплив на робочі місця — у нас складно." },
-      { id: "ps6", n: 27, type: "likert", required: true,
+      { id: "ps6", n: 29, type: "likert", required: true,
         label: "Колеги не знецінюють тих, хто відкрито каже, що користується ШІ." },
-      { id: "ps7", n: 28, type: "likert", required: true, reverse: true,
+      { id: "ps7", n: 30, type: "likert", required: true, reverse: true,
         label: "Я побоююся, що активне використання ШІ керівництво розцінить як небажання працювати самостійно." }
     ]
   },
@@ -876,21 +916,22 @@ const STEPS = [
     name: "Лідерство",
     title: "Лідерство, правила та обмін знаннями",
     questions: [
-      { id: "gv1", n: 29, type: "likert", required: true,
+      { id: "gv1", n: 31, type: "likert", required: true, na: "Не знаю",
         label: "Керівництво компанії власним прикладом демонструє використання ШІ в роботі." },
-      { id: "gv2", n: 30, type: "likert", required: true, na: "Не знаю",
+      { id: "gv2", n: 32, type: "likert", required: true, na: "Не знаю",
         label: "У компанії є зрозумілі й доступні правила, які дані можна, а які не можна передавати в ШІ-сервіси." },
-      { id: "gv3", n: 31, type: "likert", required: true, na: true,
+      { id: "gv3", n: 33, type: "likert", required: true, na: true,
+        hint: "Якщо правил немає або ви про них не знаєте — оберіть Н/З.",
         label: "Ці правила радше допомагають працювати, ніж просто забороняють." },
-      { id: "gv4", n: 32, type: "likert", required: true, reverse: true,
+      { id: "gv4", n: 34, type: "likert", required: true, reverse: true,
         label: "Вимоги до безпеки та регулювання в нашій галузі радше стримують нас від використання ШІ, ніж дають перевагу." },
-      { id: "gv5", n: 33, type: "likert", required: true,
+      { id: "gv5", n: 35, type: "likert", required: true,
         label: "Співробітники охоче діляться між собою вдалими промптами, знахідками та кейсами." },
-      { id: "gv6", n: 34, type: "likert", required: true,
+      { id: "gv6", n: 36, type: "likert", required: true,
         label: "Я маю достатньо автономії, щоб самостійно вирішувати, як виконати своє завдання, зокрема із застосуванням ШІ." },
-      { id: "gv7", n: 35, type: "likert", required: true,
+      { id: "gv7", n: 37, type: "likert", required: true,
         label: "Наші регламенти можна досить швидко змінити, якщо знайдено ефективніший спосіб роботи." },
-      { id: "gv8", n: 36, type: "likert", required: true,
+      { id: "gv8", n: 38, type: "likert", required: true,
         label: "У компанії достатньо навчання й підтримки, щоб підвищувати свою ШІ-грамотність." }
     ]
   },
@@ -899,13 +940,13 @@ const STEPS = [
     title: "Що це дає",
     sub: "Три виміри організаційної ефективності: операційний, управлінський, адаптивний.",
     questions: [
-      { id: "ef1", n: 37, type: "likert", required: true, na: true,
+      { id: "ef1", n: 39, type: "likert", required: true, na: true,
         label: "ШІ помітно скоротив час на рутинні завдання." },
-      { id: "ef2", n: 38, type: "likert", required: true, na: true,
+      { id: "ef2", n: 40, type: "likert", required: true, na: true,
         label: "Завдяки ШІ рішення ухвалюються швидше або якісніше." },
-      { id: "ef3", n: 39, type: "likert", required: true, na: true,
+      { id: "ef3", n: 41, type: "likert", required: true, na: true,
         label: "Компанія стала швидше вчитися й пробувати нове відтоді, як з'явилися інструменти ШІ." },
-      { id: "ef4", n: 40, type: "likert", required: true, na: true,
+      { id: "ef4", n: 42, type: "likert", required: true, na: true,
         label: "Якість моєї роботи завдяки ШІ радше зросла, ніж знизилася." }
     ]
   },
@@ -915,7 +956,7 @@ const STEPS = [
     sub: "Оберіть по одному рівню в кожній колонці.",
     maturity: true,
     questions: [
-      { id: "confidence", n: 41, type: "likert", required: true,
+      { id: "confidence", n: 43, type: "likert", required: true,
         label: "Наскільки ви впевнені, що компанія подолає цей розрив власними силами?" }
     ]
   },
@@ -923,7 +964,7 @@ const STEPS = [
     name: "Бар'єри",
     title: "Що заважає і що допомогло б",
     questions: [
-      { id: "barriers", n: 42, type: "checkbox", required: true, max: 3, other: true,
+      { id: "barriers", n: 44, type: "checkbox", required: true, max: 3, other: true,
         label: "Що найбільше заважає вам використовувати ШІ системно?", hint: "До 3 варіантів",
         options: ["Брак практичного навчання й прикладів під мої задачі",
           "Незрозуміло, які дані можна завантажувати, а які ні",
@@ -933,17 +974,17 @@ const STEPS = [
           "Консервативність процесів і позиція керівництва",
           "Побоювання щодо впливу на мою роль у майбутньому",
           "Етичні або репутаційні застереження", "Нічого не заважає"] },
-      { id: "support", n: 43, type: "checkbox", required: true, max: 2, other: true,
+      { id: "support", n: 45, type: "checkbox", required: true, max: 2, other: true,
         label: "Який формат підтримки був би найціннішим?", hint: "До 2 варіантів",
         options: ["Навчання з практичного застосування та безпеки даних",
           "Внутрішня база перевірених промптів і шаблонів",
           "ШІ-помічник по внутрішній документації компанії",
           "Офіційне право витрачати частину робочого часу на тестування ШІ",
           "Чіткі письмові правила, що можна й чого не можна"] },
-      { id: "story", n: 44, type: "textarea",
+      { id: "story", n: 46, type: "textarea",
         label: "Опишіть один конкретний випадок, коли ШІ реально допоміг у роботі — або підвів.",
         hint: "Необов'язково", placeholder: "Кілька речень достатньо" },
-      { id: "wish", n: 45, type: "textarea",
+      { id: "wish", n: 47, type: "textarea",
         label: "Що одне ви змінили б у компанії, щоб працювати з ШІ було легше?",
         hint: "Необов'язково", placeholder: "Одна зміна, найважливіша" }
     ]
@@ -953,10 +994,10 @@ const STEPS = [
     title: "Ваш результат",
     sub: "Розрахунок відбувається у вашому браузері.",
     questions: [
-      { id: "showResult", n: 46, type: "radio", required: true,
+      { id: "showResult", n: 48, type: "radio", required: true,
         label: "Показати ваш персональний результат одразу після завершення?",
         options: ["Так, показати рівень зрілості та мої індекси", "Ні, дякую"] },
-      { id: "email", n: 47, type: "text",
+      { id: "email", n: 49, type: "text",
         label: "Надіслати підсумковий звіт дослідження, коли він буде готовий?",
         hint: "Необов'язково. Зберігається окремим списком, не пов'язаним з вашими відповідями.",
         placeholder: "email" }
@@ -998,7 +1039,8 @@ function likertHtml(id, na, ends) {
   }
   if (na) h += `<label class="lk na"><input type="radio" name="${id}" value="na"${A[id] === "na" ? " checked" : ""}><span>${esc(naLabel)}</span></label>`;
   h += "</div>";
-  if (ends !== false) h += `<div class="scale-ends"><span>${LIKERT_ENDS[0]}</span><span>${LIKERT_ENDS[1]}</span></div>`;
+  const labels = Array.isArray(ends) ? ends : LIKERT_ENDS;
+  if (ends !== false) h += `<div class="scale-ends"><span>${esc(labels[0])}</span><span>${esc(labels[1])}</span></div>`;
   return h;
 }
 
@@ -1037,7 +1079,7 @@ function pairsHtml(cfg) {
     h += `<div class="pair"><div class="pair-title"><span class="q-num">${n}</span>${esc(it[0])}</div>
       <div class="pair-desc">${esc(it[1])}</div>
       <div class="pair-row"><span class="pair-tag now">Зараз</span><div>${likertHtml("proc" + i + "_now", true, false)}</div></div>
-      <div class="pair-row"><span class="pair-tag need">Потрібно</span><div>${likertHtml("proc" + i + "_need", false, false)}</div></div></div>`;
+      <div class="pair-row"><span class="pair-tag need">Потрібно</span><div>${likertHtml("proc" + i + "_need", false, PROC_ENDS)}</div></div></div>`;
   });
 
   h += `<div class="pair"><div class="pair-title">Свій процес</div>
@@ -1045,7 +1087,7 @@ function pairsHtml(cfg) {
     <input type="text" id="customProc" placeholder="Назва процесу" value="${esc((A.proc_custom || [{}])[0]?.name || "")}">
     <div style="margin-top:var(--space-4)">
       <div class="pair-row"><span class="pair-tag now">Зараз</span><div>${likertHtml("custom_now", true, false)}</div></div>
-      <div class="pair-row"><span class="pair-tag need">Потрібно</span><div>${likertHtml("custom_need", false, false)}</div></div>
+      <div class="pair-row"><span class="pair-tag need">Потрібно</span><div>${likertHtml("custom_need", false, PROC_ENDS)}</div></div>
     </div></div>`;
   return h;
 }
@@ -1075,7 +1117,7 @@ function render() {
       <span><b>Зараз</b> — наскільки ШІ фактично використовується у вашій компанії в цьому процесі</span>
       <span><b>Потрібно</b> — наскільки він мав би використовуватися</span>
       <span><b>Н/З</b> — процес не стосується вашої роботи</span>
-      <span><b>Шкала:</b> 1 — не використовується взагалі · 5 — використовується повною мірою</span></div>`;
+      <div class="anchors">${PROC_ANCHORS.map((a) => `<span><b>${a[0]}</b> — ${esc(a[1])}</span>`).join("")}</div></div>`;
   }
   if (s.pairs) h += pairsHtml(s.pairs);
   if (s.maturity) h += maturityHtml();
@@ -1152,15 +1194,57 @@ const val = (id, rev) => {
   return rev ? 6 - n : n;
 };
 
-function meanOf(list) {
-  const nums = list.map((x) => x).filter((x) => x !== null);
-  return nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : null;
+/* «Не знаю» / «Н/З» не дорівнює одному балу: такі пункти випадають із середнього.
+   Але якщо їх забагато, середнє з двох пунктів видавати за індекс не можна —
+   звідси minValid. Замість заниженої оцінки повертаємо null, а сам факт
+   незнання враховується окремо, у показнику достовірності. */
+function meanOf(list, minValid) {
+  const nums = list.filter((x) => x !== null);
+  if (nums.length < (minValid || 1)) return null;
+  return nums.reduce((a, b) => a + b, 0) / nums.length;
+}
+
+/* Частка пунктів, де респондент обрав «Н/З» або «Не знаю», серед тих питань,
+   що стосуються компанії загалом. Пряма міра того, наскільки він її бачить. */
+function unknownShare() {
+  const ids = ["gv1", "gv2", "gv3", "ef1", "ef2", "ef3", "ef4"];
+  for (let i = 0; i < 8; i++) ids.push("proc" + i + "_now");
+  const answered = ids.filter((id) => A[id] !== undefined);
+  if (!answered.length) return 0;
+  return answered.filter((id) => A[id] === "na").length / answered.length;
+}
+
+/* Достовірність оцінки. Не оцінює респондента — оцінює, наскільки впевнено
+   його відповіді можна переносити на всю організацію. 0–100. */
+function confidence() {
+  const sc = SCOPE_OPTS.indexOf(A.scope);
+  const aw = AWARENESS_OPTS.indexOf(A.awareness);
+  if (sc < 0 || aw < 0) return null;
+  const raw = (sc + aw) / 8 * 100 - unknownShare() * 30;
+  return Math.max(0, Math.min(100, Math.round(raw)));
+}
+
+const confBand = (c) => c === null ? null : c >= 70 ? "висока" : c >= 45 ? "помірна" : "низька";
+
+/* Заявлений рівень зрілості проти фактичних практик респондента.
+   Рівень 3+ передбачає корпоративний доступ або відомі правила;
+   рівень 4 — ще й навчання та щоденне використання. Повертає true/false/null.
+   Це не «виправлення» відповіді, а маркер завищеної самооцінки для аналізу. */
+function claimSupported() {
+  const lvl = Number(A.mat_now);
+  if (!lvl || lvl < 3) return null;
+  const corp = A.account === "Корпоративним, наданим компанією";
+  const rules = val("gv2") !== null && val("gv2") >= 3;
+  if (lvl === 3) return corp || rules;
+  const learning = val("gv8") !== null && val("gv8") >= 3;
+  const daily = A.freq === "Щодня, це вбудовано в мій робочий процес" || A.freq === "Кілька разів на тиждень";
+  return (corp || rules) && learning && daily;
 }
 
 function score() {
-  const ps = meanOf([val("ps1"), val("ps2"), val("ps3", true), val("ps4"), val("ps5", true), val("ps6"), val("ps7", true)]);
-  const gv = meanOf([val("gv1"), val("gv2"), val("gv3"), val("gv4", true), val("gv5"), val("gv6"), val("gv7"), val("gv8")]);
-  const ef = meanOf([val("ef1"), val("ef2"), val("ef3"), val("ef4")]);
+  const ps = meanOf([val("ps1"), val("ps2"), val("ps3", true), val("ps4"), val("ps5", true), val("ps6"), val("ps7", true)], 4);
+  const gv = meanOf([val("gv1"), val("gv2"), val("gv3"), val("gv4", true), val("gv5"), val("gv6"), val("gv7"), val("gv8")], 5);
+  const ef = meanOf([val("ef1"), val("ef2"), val("ef3"), val("ef4")], 2);
 
   const gaps = [];
   STEPS.find((s) => s.pairs).pairs.items.forEach((it, i) => {
@@ -1170,19 +1254,45 @@ function score() {
   gaps.sort((a, b) => b.gap - a.gap);
 
   const matNow = Number(A.mat_now), matTarget = Number(A.mat_target);
-  const composite = meanOf([ps, gv, ef]);
-  return { ps, gv, ef, gaps, matNow, matTarget, composite };
+  const composite = meanOf([ps, gv, ef], 2);
+  const conf = confidence();
+  return {
+    ps, gv, ef, gaps, matNow, matTarget, composite,
+    confidence: conf,
+    confidenceBand: confBand(conf),
+    unknownShare: Number(unknownShare().toFixed(2)),
+    policyKnown: A.gv2 === undefined ? null : A.gv2 !== "na",
+    claimSupported: claimSupported()
+  };
 }
 
 /* --------------------------------------------------------------------------
    Результат
    -------------------------------------------------------------------------- */
 function metric(name, v, note) {
-  if (v === null) return "";
+  if (v === null) {
+    return `<div class="metric">
+      <div class="metric-top"><span class="metric-name">${esc(name)}</span><span class="metric-val">—</span></div>
+      <div class="metric-note">Забагато відповідей «Н/З», щоб порахувати цей індекс. Це не помилка: частина тем просто не стосується вашої роботи.</div></div>`;
+  }
   return `<div class="metric">
     <div class="metric-top"><span class="metric-name">${esc(name)}</span><span class="metric-val">${v.toFixed(2)} / 5</span></div>
     <div class="metric-track"><div class="metric-fill" style="width:${(v / 5 * 100).toFixed(0)}%"></div></div>
     <div class="metric-note">${esc(note)}</div></div>`;
+}
+
+/* Рамка охоплення: показує, на що саме поширюється отримана оцінка.
+   Без неї респондент читає індивідуальний результат як діагноз компанії. */
+function scopeNote(r) {
+  if (r.confidence === null) return "";
+  const wide = SCOPE_OPTS.indexOf(A.scope) >= 3;
+  const base = wide
+    ? "Ви оцінювали організацію широко, тож ваша картина близька до загальнокорпоративної."
+    : "Ви оцінювали переважно свою команду чи функцію, тож це погляд із вашої ділянки, а не діагноз усієї компанії.";
+  const extra = r.confidenceBand === "низька"
+    ? " Частину питань про компанію ви позначили як невідомі — саме такі «сліпі зони» і є одним із результатів дослідження."
+    : "";
+  return `<div class="metric-note" style="margin-top:var(--space-6)">${base}${extra}</div>`;
 }
 
 function psNote(v) {
@@ -1216,7 +1326,8 @@ function showResult() {
       <p class="sub">Розраховано за вашими відповідями. Це індивідуальна оцінка, а не оцінка компанії — компанійний індекс формується з відповідей усіх колег.</p>
       ${metric("Психологічна безпека", r.ps, psNote(r.ps))}
       ${metric("Лідерство та правила", r.gv, "Наскільки керівництво, правила й обмін знаннями підтримують використання ШІ.")}
-      ${metric("Сприйнята ефективність", r.ef, "Операційний, управлінський і адаптивний ефект разом.")}`;
+      ${metric("Сприйнята ефективність", r.ef, "Операційний, управлінський і адаптивний ефект разом.")}
+      ${scopeNote(r)}`;
 
     if (r.gaps.length) {
       h += `<hr class="rule"><h2>Найбільші розриви за процесами</h2>
@@ -1248,7 +1359,7 @@ function setSendStatus(state) {
 }
 
 function payload() {
-  return { answers: A, scores: score(), submitted_at: new Date().toISOString(), version: "3.0" };
+  return { answers: A, scores: score(), submitted_at: new Date().toISOString(), version: "3.2" };
 }
 
 function download() {
@@ -1289,9 +1400,15 @@ function row() {
     ef_index: s.ef === null ? null : Number(s.ef.toFixed(2)),
     maturity_now: s.matNow || null,
     maturity_target: s.matTarget || null,
+    coverage_scope: A.scope || null,
+    ai_awareness: A.awareness || null,
+    confidence: s.confidence,
+    unknown_share: s.unknownShare,
+    policy_known: s.policyKnown,
+    claim_supported: s.claimSupported,
     answers: answers,
     scores: s,
-    version: "3.1"
+    version: "3.2"
   };
 }
 
@@ -1318,7 +1435,9 @@ function submit() {
 
   const email = (A.email || "").trim();
   const jobs = [post("responses", row())];
-  if (email) jobs.push(post("report_subscribers", { email: email }).catch(() => true));
+  if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    jobs.push(post("report_subscribers", { email: email }).catch(() => true));
+  }
   return Promise.all(jobs).then(() => "sent").catch(() => "failed");
 }
 
