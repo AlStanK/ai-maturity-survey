@@ -753,6 +753,12 @@ code, kbd, samp { font-family: var(--font-mono); }
 const API_URL = "";
 const API_KEY = "";
 
+/* SHEETS_URL — /exec адреса Apps Script Web App, який дописує відповіді
+   в Google Sheets (deploy/apps-script/Code.gs). Тимчасовий режим збору,
+   поки немає публічного Postgres. Якщо заповнені обидві адреси,
+   пріоритет має API_URL. */
+const SHEETS_URL = "https://script.google.com/macros/s/AKfycbyzgeyQaPtxfcH7XN_q9oarx8l3YZDPP1yqwidSC15EmtgDwNSCM1krtLieThNSe6X_nw/exec";
+
 const LIKERT_ENDS = ["1 — категорично не згоден", "5 — повністю згоден"];
 
 /* Поведінкові якорі для шкали використання ШІ в процесах (Блок «Процеси»).
@@ -1412,7 +1418,21 @@ function row() {
   };
 }
 
+/* Apps Script не віддає CORS-заголовки на preflight, тому надсилаємо
+   Content-Type: text/plain — це «простий» запит, браузер не робить OPTIONS.
+   Тіло все одно лишається JSON, скрипт розбирає його сам. */
+function postSheets(table, body) {
+  return fetch(SHEETS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ table: table, body: body })
+  })
+    .then((r) => r.json())
+    .then((j) => { if (!j.ok) throw new Error(j.error || "sheets error"); return true; });
+}
+
 function post(table, body) {
+  if (!API_URL && SHEETS_URL) return postSheets(table, body);
   const headers = { "Content-Type": "application/json", "Prefer": "return=minimal" };
   if (API_KEY) {
     headers["apikey"] = API_KEY;
@@ -1431,7 +1451,7 @@ function submit() {
   store.push(data);
   LS.set("aimat_submissions", JSON.stringify(store));
 
-  if (!API_URL) return Promise.resolve("local");
+  if (!API_URL && !SHEETS_URL) return Promise.resolve("local");
 
   const email = (A.email || "").trim();
   const jobs = [post("responses", row())];
