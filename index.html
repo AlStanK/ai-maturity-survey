@@ -959,7 +959,7 @@ const STEPS = [
   {
     name: "Зрілість",
     title: "Рівень зрілості: зараз і ціль",
-    sub: "Оберіть по одному рівню в кожній колонці.",
+    sub: "Оберіть по одному рівню в кожній колонці. Повторний клік по вибраній крапці знімає вибір.",
     maturity: true,
     questions: [
       { id: "confidence", n: 43, type: "likert", required: true,
@@ -1142,9 +1142,53 @@ function render() {
 }
 
 function bind() {
-  $("#stepHost").querySelectorAll("input, textarea").forEach((el) => {
+  const host = $("#stepHost");
+  host.querySelectorAll("input, textarea").forEach((el) => {
     el.addEventListener("change", collect);
     if (el.type === "text" || el.tagName === "TEXTAREA") el.addEventListener("input", collect);
+  });
+}
+
+/* Повторний клік по вже обраному варіанту знімає вибір.
+   Без цього випадкове натискання неможливо скасувати: radio-групу можна
+   лише перемкнути на інший варіант, і найпомітніше це в матриці зрілості,
+   де вибір робиться одним кліком по крапці.
+
+   Делегування на #stepHost, а не обробники на самих input: вміст кроку
+   перемальовується через innerHTML, а варіанти обгорнуті в <label> —
+   клік по підпису не породжує mousedown на самому input.
+
+   Стан «було вибрано» запам'ятовуємо на pointerdown: до моменту click
+   подія change вже могла оновити відповіді.
+
+   Реагуємо лише на клік, чия ціль — сам input. Клік по підпису <label>
+   породжує другий, синтетичний клік на самому input, і той приходить
+   останнім: знявши вибір на ньому, ми певні, що ніщо його не поверне.
+   preventDefault тут не підходить — для radio він скасовує активацію
+   і відновлює попередній стан, затираючи зняття. */
+function bindRadioReset() {
+  const host = $("#stepHost");
+  let armed = null;
+
+  const radioAt = (t) => {
+    const lbl = t.closest("label");
+    if (lbl) return lbl.querySelector('input[type="radio"]');
+    return t.matches && t.matches('input[type="radio"]') ? t : null;
+  };
+
+  host.addEventListener("pointerdown", (e) => {
+    const el = radioAt(e.target);
+    armed = el && el.checked ? el : null;
+  });
+
+  host.addEventListener("click", (e) => {
+    if (e.target !== armed || !armed.checked) return;
+    const el = armed;
+    armed = null;
+    el.checked = false;
+    delete A[el.name];
+    if (el.value === "__other") delete A[el.name + "_other"];
+    save();
   });
 }
 
@@ -1464,6 +1508,8 @@ function submit() {
 /* --------------------------------------------------------------------------
    Навігація
    -------------------------------------------------------------------------- */
+bindRadioReset();
+
 $("#startBtn").addEventListener("click", () => {
   if (!$("#consent").checked) { $("#consentErr").classList.add("on"); return; }
   $("#intro").classList.add("hidden");
