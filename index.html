@@ -542,6 +542,10 @@ code, kbd, samp { font-family: var(--font-mono); }
     transition: box-shadow var(--dur-base) var(--ease-out), color var(--dur-fast) var(--ease-out);
   }
   .opt:hover { box-shadow: var(--soft-out-sm); }
+  .opt-body { display: grid; gap: var(--space-1); }
+  .opt-lvl { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--cyan-deep); letter-spacing: var(--tracking-wide); }
+  .opt-name { color: var(--fg-1); font-weight: var(--weight-semibold); }
+  .opt-desc { font-size: var(--text-xs); color: var(--fg-4); line-height: var(--leading-relaxed); }
   .opt input { margin: 2px 0 0; accent-color: var(--cyan); width: 15px; height: 15px; flex: none; }
   .opt:has(input:checked) {
     background: linear-gradient(145deg, #241e19, #2f2822);
@@ -603,24 +607,6 @@ code, kbd, samp { font-family: var(--font-mono); }
   .other-wrap { margin-top: var(--space-3); padding-left: var(--space-5); }
   .other-wrap input { height: var(--control-h-md); font-size: var(--text-xs); }
 
-  /* ---------- Maturity ---------- */
-  .mat { display: flex; flex-direction: column; gap: var(--space-4); margin-top: var(--space-5); }
-  .mat-row {
-    display: grid; grid-template-columns: 1fr 74px 74px; gap: var(--space-3); align-items: center;
-    padding: var(--space-5); border: 0; border-radius: var(--radius-lg);
-    background: var(--soft-surface); box-shadow: var(--soft-out-xs);
-    transition: box-shadow var(--dur-base) var(--ease-out);
-  }
-  .mat-row:hover { box-shadow: var(--soft-out-sm); }
-  .mat-lvl { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--cyan-deep); letter-spacing: var(--tracking-wide); }
-  .mat-name { font-size: var(--text-sm); color: var(--fg-1); }
-  .mat-desc { font-size: var(--text-xs); color: var(--fg-4); line-height: var(--leading-snug); margin-top: 2px; }
-  .mat-pick { display: flex; justify-content: center; }
-  .mat-head { display: grid; grid-template-columns: 1fr 74px 74px; gap: var(--space-3); padding: 0 var(--space-5) var(--space-2);
-    font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: var(--tracking-wider); color: var(--fg-4); }
-  .mat-head span { text-align: center; }
-  .mat-head span:first-child { text-align: left; }
-
   /* ---------- Buttons (SoftUI) ---------- */
   .btn-glass, .btn-glass-ghost {
     height: var(--control-h-lg); padding: 0 30px; border: 0; border-radius: var(--radius-lg);
@@ -668,7 +654,6 @@ code, kbd, samp { font-family: var(--font-mono); }
   .hidden { display: none !important; }
   @media (max-width: 560px) {
     .card { padding: var(--space-5); }
-    .mat-row, .mat-head { grid-template-columns: 1fr 54px 54px; }
     .pair-row { grid-template-columns: 1fr; gap: var(--space-1); }
     .facts { gap: var(--space-3); }
     .fact { min-width: 88px; padding: var(--space-3) var(--space-4); }
@@ -687,8 +672,8 @@ code, kbd, samp { font-family: var(--font-mono); }
       <p class="lede">Інструменти доступні всім. Системно ними користуються одиниці. Різницю робить не технологія, а культура — і її можна виміряти.</p>
       <p class="antithesis">Не про інструменти. Про готовність.</p>
       <div class="facts">
-        <div class="fact"><b>49</b><span>питань</span></div>
-        <div class="fact"><b>14</b><span>хвилин</span></div>
+        <div class="fact"><b>51</b><span>питання</span></div>
+        <div class="fact"><b>15</b><span>хвилин</span></div>
         <div class="fact"><b>0</b><span>персональних даних</span></div>
       </div>
     </div>
@@ -958,19 +943,26 @@ const STEPS = [
   },
   {
     name: "Зрілість",
-    title: "Рівень зрілості: зараз і ціль",
-    sub: "Оберіть по одному рівню в кожній колонці. Повторний клік по вибраній крапці знімає вибір.",
-    maturity: true,
+    title: "Рівень зрілості: де ви зараз і куди йдете",
+    sub: "Два питання про ту саму шкалу з чотирьох рівнів. Повторний клік по вибраному варіанту знімає вибір.",
     questions: [
-      { id: "confidence", n: 43, type: "likert", required: true,
-        label: "Наскільки ви впевнені, що компанія подолає цей розрив власними силами?" }
+      { id: "mat_now", n: 43, type: "levels", required: true,
+        label: "На якому рівні ваша компанія зараз?",
+        hint: "Оберіть опис, найближчий до реальності — навіть якщо він вам не подобається." },
+      { id: "mat_target", n: 44, type: "levels", required: true,
+        label: "На якому рівні вона має бути через 2 роки?",
+        hint: "На вашу думку. Не обов'язково вищий рівень: він може збігатися з нинішнім або бути нижчим, якщо ви вважаєте, що компанія пішла задалеко." },
+      { id: "confidence", n: 45, type: "likert", required: true,
+        ends: ["1 — зовсім не впевнений / не впевнена", "5 — цілком упевнений / упевнена"],
+        label: "Наскільки ви впевнені, що компанія пройде цей шлях власними силами?",
+        hint: "Якщо ви обрали однаковий рівень у двох попередніх питаннях — оцініть упевненість, що компанія втримає нинішній стан." }
     ]
   },
   {
     name: "Бар'єри",
     title: "Що заважає і що допомогло б",
     questions: [
-      { id: "barriers", n: 44, type: "checkbox", required: true, max: 3, other: true,
+      { id: "barriers", n: 46, type: "checkbox", required: true, max: 3, other: true,
         label: "Що найбільше заважає вам використовувати ШІ системно?", hint: "До 3 варіантів",
         options: ["Брак практичного навчання й прикладів під мої задачі",
           "Незрозуміло, які дані можна завантажувати, а які ні",
@@ -980,17 +972,17 @@ const STEPS = [
           "Консервативність процесів і позиція керівництва",
           "Побоювання щодо впливу на мою роль у майбутньому",
           "Етичні або репутаційні застереження", "Нічого не заважає"] },
-      { id: "support", n: 45, type: "checkbox", required: true, max: 2, other: true,
+      { id: "support", n: 47, type: "checkbox", required: true, max: 2, other: true,
         label: "Який формат підтримки був би найціннішим?", hint: "До 2 варіантів",
         options: ["Навчання з практичного застосування та безпеки даних",
           "Внутрішня база перевірених промптів і шаблонів",
           "ШІ-помічник по внутрішній документації компанії",
           "Офіційне право витрачати частину робочого часу на тестування ШІ",
           "Чіткі письмові правила, що можна й чого не можна"] },
-      { id: "story", n: 46, type: "textarea",
+      { id: "story", n: 48, type: "textarea",
         label: "Опишіть один конкретний випадок, коли ШІ реально допоміг у роботі — або підвів.",
         hint: "Необов'язково", placeholder: "Кілька речень достатньо" },
-      { id: "wish", n: 47, type: "textarea",
+      { id: "wish", n: 49, type: "textarea",
         label: "Що одне ви змінили б у компанії, щоб працювати з ШІ було легше?",
         hint: "Необов'язково", placeholder: "Одна зміна, найважливіша" }
     ]
@@ -1000,10 +992,10 @@ const STEPS = [
     title: "Ваш результат",
     sub: "Розрахунок відбувається у вашому браузері.",
     questions: [
-      { id: "showResult", n: 48, type: "radio", required: true,
+      { id: "showResult", n: 50, type: "radio", required: true,
         label: "Показати ваш персональний результат одразу після завершення?",
         options: ["Так, показати рівень зрілості та мої індекси", "Ні, дякую"] },
-      { id: "email", n: 49, type: "text",
+      { id: "email", n: 51, type: "text",
         label: "Надіслати підсумковий звіт дослідження, коли він буде готовий?",
         hint: "Необов'язково. Зберігається окремим списком, не пов'язаним з вашими відповідями.",
         placeholder: "email" }
@@ -1056,7 +1048,15 @@ function questionHtml(q) {
   if (q.hint) h += `<div class="q-hint">${esc(q.hint)}</div>`;
 
   if (q.type === "likert") {
-    h += likertHtml(q.id, q.na);
+    h += likertHtml(q.id, q.na, q.ends);
+  } else if (q.type === "levels") {
+    h += '<div class="opts">';
+    MATURITY.forEach((m, i) => {
+      const v = String(i + 1);
+      h += `<label class="opt"><input type="radio" name="${q.id}" value="${v}"${A[q.id] === v ? " checked" : ""}>
+        <span class="opt-body"><span class="opt-lvl">Рівень ${v}</span><span class="opt-name">${esc(m[0])}</span><span class="opt-desc">${esc(m[1])}</span></span></label>`;
+    });
+    h += "</div>";
   } else if (q.type === "radio" || q.type === "checkbox") {
     const t = q.type === "radio" ? "radio" : "checkbox";
     h += '<div class="opts">';
@@ -1098,19 +1098,6 @@ function pairsHtml(cfg) {
   return h;
 }
 
-function maturityHtml() {
-  let h = '<div class="mat-head"><span>Рівень</span><span>Зараз</span><span>Ціль</span></div><div class="mat">';
-  MATURITY.forEach((m, i) => {
-    const lvl = i + 1;
-    h += `<div class="mat-row">
-      <div><div class="mat-lvl">Рівень ${lvl}</div><div class="mat-name">${esc(m[0])}</div><div class="mat-desc">${esc(m[1])}</div></div>
-      <div class="mat-pick"><input type="radio" name="mat_now" value="${lvl}"${A.mat_now == lvl ? " checked" : ""} style="accent-color:var(--cyan);width:17px;height:17px"></div>
-      <div class="mat-pick"><input type="radio" name="mat_target" value="${lvl}"${A.mat_target == lvl ? " checked" : ""} style="accent-color:var(--cyan);width:17px;height:17px"></div>
-    </div>`;
-  });
-  return h + "</div>";
-}
-
 /* --------------------------------------------------------------------------
    Рендер кроку
    -------------------------------------------------------------------------- */
@@ -1126,7 +1113,6 @@ function render() {
       <div class="anchors">${PROC_ANCHORS.map((a) => `<span><b>${a[0]}</b> — ${esc(a[1])}</span>`).join("")}</div></div>`;
   }
   if (s.pairs) h += pairsHtml(s.pairs);
-  if (s.maturity) h += maturityHtml();
   (s.questions || []).forEach((q) => { h += questionHtml(q); });
   h += "</div>";
 
@@ -1230,7 +1216,6 @@ function validate() {
   if (s.pairs) {
     s.pairs.items.forEach((_, i) => { if (!A["proc" + i + "_now"] || !A["proc" + i + "_need"]) ok = false; });
   }
-  if (s.maturity && (!A.mat_now || !A.mat_target)) ok = false;
   return ok;
 }
 
