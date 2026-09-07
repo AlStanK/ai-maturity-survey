@@ -4,7 +4,8 @@
 штучного інтелекту. Інструмент збору даних для кваліфікаційної роботи
 програми SE MBA (Бізнес-школа МІМ-Київ).
 
-**Стек:** статична сторінка на GitHub Pages → PostgREST → власний PostgreSQL → Metabase.
+**Стек (продакшн):** статична сторінка на GitHub Pages → Neon Data API (керований PostgREST) → PostgreSQL у Neon.
+Альтернатива для власного сервера: PostgREST + PostgreSQL у Docker (розділ «Свій сервер»).
 
 ---
 
@@ -15,14 +16,73 @@
 | `index.html` | Уся анкета: 51 питання, 10 кроків, розрахунок індексів і достовірності оцінки у браузері. Самодостатній файл — стилі й логіка вбудовані. |
 | `assets/plato-hero.png` | Hero-зображення з дизайн-системи AInoia. |
 | `db/schema.sql` | Таблиці, RLS-політики, представлення для аналітики. |
+| `db/neon-grants.sql` | Insert-only права ролі `anonymous` для Neon Data API. Застосовувати після увімкнення Data API. |
+| `.github/workflows/pages.yml` | Публікація лише статики (`index.html` + `assets/`) на GitHub Pages при push у `main`. |
 | `db/pgvector.sql` | Необов'язкове: ембединги відкритих відповідей для семантичного аналізу. |
-| `deploy/docker-compose.yml` | Postgres + PostgREST, опційно Caddy (TLS) і Metabase. |
+| `deploy/docker-compose.yml` | Альтернатива: Postgres + PostgREST на власному сервері, опційно Caddy (TLS) і Metabase. |
 | `deploy/01-roles.sh` | Створення ролей `web_anon` та `authenticator` при першому старті. |
 | `deploy/Caddyfile` | Зворотний проксі з автоматичним сертифікатом Let's Encrypt. |
+| `deploy/apps-script/Code.gs` | Резервний збір у Google Sheets; у продакшні вимкнено (`SHEETS_URL = ""`). |
 
 ---
 
-## Розгортання
+## Розгортання (продакшн: GitHub Pages + Neon)
+
+Та сама схема, що й у AI Readiness Diagnostic AInoia: сторінка на Pages, база й API у Neon.
+Свій PostgREST не потрібен — Neon Data API є керованим PostgREST поверх тієї самої бази.
+
+| Шар | Де |
+|---|---|
+| Код | `github.com/AlStanK/ai-maturity-survey`, `main` = канон |
+| Сторінка | `https://alstank.github.io/ai-maturity-survey/`, публікує `.github/workflows/pages.yml` |
+| База | Neon, проєкт AInoia (`eu-central-1`), база `survey`, схема `public` |
+| API | `https://ep-orange-flower-b29e9zvj.apirest.c-6.eu-central-1.aws.neon.tech/survey/rest/v1`, анонімні запити → роль `anonymous` |
+| Auth | `https://ep-orange-flower-b29e9zvj.neonauth.c-6.eu-central-1.aws.neon.tech/poll/auth` — сторінка бере анонімний JWT перед POST. Neon Auth один на гілку і привʼязаний до бази `poll`; його токен приймає Data API обох баз |
+
+Рядок підключення власника — `neonctl connection-string --database-name survey --role-name neondb_owner`
+(див. `~/.claude/secrets-registry.md`, у git не потрапляє).
+
+### 1. База
+
+```bash
+neonctl databases create --project-id <project> --name survey --owner-name neondb_owner
+SURVEY_URL=$(neonctl connection-string --project-id <project> --database-name survey --role-name neondb_owner)
+psql "$SURVEY_URL" -v ON_ERROR_STOP=1 -f db/schema.sql
+```
+
+### 2. Data API
+
+```bash
+neonctl data-api create --project-id <project> --database survey --auth-provider neon_auth \
+  --db-schemas public --db-anon-role anonymous --openapi-mode disabled \
+  --server-cors-allowed-origins https://alstank.github.io
+psql "$SURVEY_URL" -v ON_ERROR_STOP=1 -f db/neon-grants.sql
+```
+
+Neon Data API не приймає запити без JWT, навіть анонімні: сторінка спершу робить
+`GET AUTH_URL/token/anonymous` і кладе токен в `Authorization: Bearer`. Окремий Neon Auth
+для `survey` увімкнути не можна (один на гілку, уже зайнятий базою `poll`), тому
+`AUTH_URL` вказує на `/poll/auth` — токен ролі `anonymous` Data API `survey` приймає.
+
+Перевірено на живому API (2026-09-07): `POST /responses` → 201, `POST /report_subscribers` → 201,
+`GET /responses` і `GET /v_company_summary` анонімом → відмова, preflight з чужого домену — без CORS.
+
+### 3. Сторінка
+
+У `index.html`, у блоці конфігурації на початку скрипта, `API_URL` і `AUTH_URL` вказують на Neon.
+`SHEETS_URL` порожній: Google Sheets лишається резервним каналом, не основним.
+
+Pages публікується через GitHub Actions (Settings → Pages → Source: **GitHub Actions**).
+У продакшн потрапляють лише `index.html` і `assets/`.
+
+### 4. Аналітика
+
+Читати дані — тільки власником через `psql "$SURVEY_URL"` або Metabase, підключений до Neon
+тим самим рядком. Починати з `v_company_summary`, `v_industry_benchmark`, `v_perception_gap`.
+
+---
+
+## Свій сервер (альтернатива Neon)
 
 ### Що потрібно
 
@@ -57,6 +117,7 @@ docker compose --profile tls up -d
 
 ```js
 const API_URL = "https://api.example.com";
+const AUTH_URL = "";  // токен не потрібен: анонімна роль задана в PostgREST
 const API_KEY = "";   // для власного PostgREST не потрібен
 ```
 
@@ -81,7 +142,7 @@ CORS_ORIGINS=https://alstank.github.io
 
 ### 4. Опублікувати сторінку
 
-**Settings → Pages → Source: Deploy from a branch → `main` / root.**
+Так само, як у продакшн-схемі: workflow `.github/workflows/pages.yml` при push у `main`.
 
 Сторінка стане доступною за адресою `https://<user>.github.io/ai-maturity-survey/`.
 
@@ -109,7 +170,7 @@ docker compose --profile bi up -d
 
 | Роль | Права |
 |---|---|
-| `web_anon` | Тільки `INSERT` у `responses` і `report_subscribers` |
+| `web_anon` (PostgREST) / `anonymous` (Neon) | Тільки `INSERT` у `responses` і `report_subscribers` |
 | `authenticator` | Лише вхід і перемикання на `web_anon`, власних прав не має |
 | власник бази | Повний доступ; під ним працює Metabase і скрипт ембедингів |
 
