@@ -5,7 +5,7 @@
 <meta name="theme-color" content="#f6f4ef">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Індекс ШІ-зрілості організаційної культури</title>
-<meta name="description" content="Анонімне дослідження культурної готовності компаній до системного використання штучного інтелекту. 13 хвилин, миттєвий результат.">
+<meta name="description" content="Анонімна анкета: наскільки культура компанії готова до системного використання штучного інтелекту. 15 хвилин, миттєвий результат.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -222,6 +222,23 @@ button[disabled]{opacity:.5;cursor:not-allowed;transform:none}
 .err{display:none;color:var(--danger);font-size:13.5px;margin-top:12px}
 .err.on{display:block}
 
+/* Контекст запрошення, код організації, посилання для колег */
+.invite-ctx{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:14px;color:var(--muted);margin:-2px 0 18px}
+.invite-ctx strong{color:var(--foreground);font-weight:600}
+.code-row{display:flex;align-items:center;gap:10px;margin-top:12px}
+.code-label{font-size:13.5px;color:var(--muted)}
+.code{font-family:var(--font-mono);font-size:14px;letter-spacing:.08em;background:var(--surface-sunken);border:1px solid var(--border);
+  border-radius:6px;padding:3px 9px;color:var(--foreground)}
+.invite{display:flex;gap:10px;margin-top:6px}
+.invite input[readonly]{font-family:var(--font-mono);font-size:13px;color:var(--muted)}
+.invite button{flex:none;height:40px}
+.field-label{display:block;font-size:14px;font-weight:500;margin:0 0 6px}
+.link-btn{display:inline;height:auto;padding:0;background:none;border:0;font:inherit;font-weight:600;
+  color:var(--accent-text);text-decoration:underline;text-underline-offset:2px}
+.link-btn:hover{color:var(--tan-deep)}
+h3{font-size:16px;font-weight:600;margin:0 0 10px;color:var(--foreground);letter-spacing:-.01em;line-height:1.4}
+.tiny{color:var(--muted);font-size:12.5px;line-height:1.55}
+
 /* Результат */
 .result-hero{padding:4px 0 8px}
 .result-lvl{font-family:var(--font-sans);font-size:clamp(48px,10vw,72px);font-weight:700;letter-spacing:-.04em;
@@ -264,6 +281,7 @@ hr.rule{border:0;border-top:1px solid var(--separator);margin:26px 0}
         <h1>Індекс <em>ШІ-зрілості</em><br>організаційної культури</h1>
         <p class="lede">Інструменти доступні всім. Системно ними користуються одиниці. Різницю робить не технологія, а культура — і її можна виміряти.</p>
         <p class="antithesis">Не про інструменти. Про готовність.</p>
+        <div class="invite-ctx" id="inviteCtx"></div>
       </div>
       <div class="hero-art"><div class="hero-art-inner"><img src="assets/plato-hero.png" alt="" loading="eager" decoding="async"></div></div>
       <div class="facts">
@@ -277,12 +295,12 @@ hr.rule{border:0;border-top:1px solid var(--separator);margin:26px 0}
       <h2>Перед початком</h2>
       <div class="consent">
         <p><strong>Що це.</strong> Опитування вимірює, наскільки культура вашої компанії готова до системного використання штучного інтелекту: чи безпечно тут пробувати нове, чи є зрозумілі правила, і де саме розрив між тим, як ШІ використовується зараз, і тим, як міг би.</p>
-        <p><strong>Навіщо.</strong> Дані збираються для кваліфікаційної роботи програми SE MBA (Бізнес-школа МІМ-Київ) на тему трансформації організаційної культури в епоху ШІ. Узагальнені результати буде опубліковано у відкритому доступі.</p>
-        <p><strong>Що ми збираємо.</strong> Назву компанії — щоб порахувати індекс саме для вашої організації. Ваше ім'я, посаду, email чи IP-адресу ми не збираємо.</p>
+        <p><strong>Навіщо.</strong> Щоб побачити, де саме культура допомагає або заважає використанню ШІ, і отримати індекс для своєї організації, зведений з відповідей колег.</p>
+        <p><strong>Що ми збираємо.</strong> Назву компанії та код організації — він зводить ваші відповіді з відповідями колег в один індекс. Ваше ім'я, посаду, email чи IP-адресу ми не збираємо.</p>
         <div class="note">
           Індивідуальні відповіді не показуються керівництву — ніколи й ні в якому вигляді.
           Компанія отримує лише агрегований звіт, і лише якщо анкету заповнили щонайменше <strong>5 осіб</strong>.
-          У тексті дослідження компанії не порівнюються й не ранжуються; галузеві дані подаються середніми по групах.
+          Компанії між собою не порівнюються й не ранжуються; галузеві дані подаються середніми по групах.
         </div>
         <p><strong>Добровільність.</strong> Ви можете припинити заповнення на будь-якому питанні. Незавершені анкети не надсилаються.</p>
       </div>
@@ -316,7 +334,7 @@ hr.rule{border:0;border-top:1px solid var(--separator);margin:26px 0}
 <script>
 /* =============================================================================
    Індекс ШІ-зрілості організаційної культури — логіка анкети
-   Кваліфікаційна робота SE MBA, МІМ-Київ. Дизайн-система AInoia.
+   Дизайн-система AInoia.
    ========================================================================== */
 
 /* ---------------------------------------------------------------------------
@@ -387,7 +405,7 @@ const STEPS = [
   {
     name: "Компанія",
     title: "Ваша компанія",
-    sub: "Назва потрібна, щоб порахувати індекс саме для вашої організації. Керівництву індивідуальні відповіді не передаються.",
+    sub: "Назва і код організації потрібні, щоб порахувати індекс саме для вашої організації. Керівництву індивідуальні відповіді не передаються.",
     questions: [
       { id: "company", n: 1, type: "text", required: true,
         label: "Назва компанії", placeholder: "Наприклад: ТОВ «Приклад»" },
@@ -440,7 +458,7 @@ const STEPS = [
   {
     name: "Практики",
     title: "Як ви користуєтеся ШІ сьогодні",
-    sub: "Фактичний стан, без оцінок. Найкорисніші для дослідження — чесні відповіді.",
+    sub: "Фактичний стан, без оцінок. Найкорисніші — чесні відповіді.",
     questions: [
       { id: "freq", n: 11, type: "radio", required: true,
         label: "Як часто ви використовуєте ШІ в робочих завданнях?",
@@ -601,7 +619,7 @@ const STEPS = [
         label: "Показати ваш персональний результат одразу після завершення?",
         options: ["Так, показати рівень зрілості та мої індекси", "Ні, дякую"] },
       { id: "email", n: 51, type: "text",
-        label: "Надіслати підсумковий звіт дослідження, коли він буде готовий?",
+        label: "Надіслати підсумковий звіт, коли він буде готовий?",
         hint: "Необов'язково. Зберігається окремим списком, не пов'язаним з вашими відповідями.",
         placeholder: "email" }
     ]
@@ -626,6 +644,25 @@ const LS = {
 
 const A = JSON.parse(LS.get("aimat_answers", "{}"));
 let step = 0;
+
+/* Код організації: 8 символів без 0/O/1/I. Генерується першому респонденту
+   (координатору), колеги отримують його в посиланні-запрошенні (?org=КОД).
+   Саме код, а не назва, зводить відповіді однієї організації в базі. */
+const CODE_RE = /^[A-Z0-9]{4,12}$/;
+const ORG = Object.assign({ code: "", fromLink: false, invitedBy: "", name: "" },
+  JSON.parse(LS.get("aimat_org", "{}")));
+const saveOrg = () => LS.set("aimat_org", JSON.stringify(ORG));
+function genCode() {
+  const AL = "ABCDEFGHJKMNPQRSTUVWXYZ23456789", b = new Uint8Array(8);
+  crypto.getRandomValues(b);
+  return Array.from(b, (x) => AL[x % AL.length]).join("");
+}
+function inviteLink() {
+  const from = ORG.name.trim();
+  return location.origin + location.pathname + "?org=" + ORG.code
+    + (from ? "&from=" + encodeURIComponent(from.slice(0, 60)) : "");
+}
+const isCoordinator = () => !ORG.fromLink;
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -677,10 +714,20 @@ function questionHtml(q) {
     h += "</div>";
   } else if (q.type === "text") {
     h += `<input type="text" name="${q.id}" placeholder="${esc(q.placeholder || "")}" value="${esc(A[q.id] || "")}">`;
+    if (q.id === "company") h += orgCodeHtml();
   } else if (q.type === "textarea") {
     h += `<textarea name="${q.id}" placeholder="${esc(q.placeholder || "")}">${esc(A[q.id] || "")}</textarea>`;
   }
   return h + "</div>";
+}
+
+function orgCodeHtml() {
+  return `<div class="code-row"><span class="code-label">Код організації</span><span class="code">${esc(ORG.code)}</span></div>
+    <div class="q-hint" style="margin-top:8px">${ORG.fromLink
+      ? "Ви перейшли за запрошенням — код підставлено автоматично. Саме він зводить ваші відповіді з відповідями колег."
+      : "Відповіді колег зводяться в один індекс за цим кодом. Наприкінці ви отримаєте посилання з ним, щоб надіслати колегам."}</div>
+    ${!ORG.fromLink ? `<div class="q-hint" style="margin-top:4px">Заповнюєте анкету для іншої організації?
+      <button type="button" class="link-btn" id="newOrg">Розпочати нову анкету</button></div>` : ""}`;
 }
 
 function pairsHtml(cfg) {
@@ -734,6 +781,8 @@ function render() {
 
 function bind() {
   const host = $("#stepHost");
+  const newOrg = host.querySelector("#newOrg");
+  if (newOrg) newOrg.addEventListener("click", startNewOrg);
   host.querySelectorAll("input, textarea").forEach((el) => {
     el.addEventListener("change", collect);
     if (el.type === "text" || el.tagName === "TEXTAREA") el.addEventListener("input", collect);
@@ -930,7 +979,7 @@ function scopeNote(r) {
     ? "Ви оцінювали організацію широко, тож ваша картина близька до загальнокорпоративної."
     : "Ви оцінювали переважно свою команду чи функцію, тож це погляд із вашої ділянки, а не діагноз усієї компанії.";
   const extra = r.confidenceBand === "низька"
-    ? " Частину питань про компанію ви позначили як невідомі — саме такі «сліпі зони» і є одним із результатів дослідження."
+    ? " Частину питань про компанію ви позначили як невідомі — саме такі «сліпі зони» і є одним із результатів анкети."
     : "";
   return `<div class="metric-note" style="margin-top:var(--space-6)">${base}${extra}</div>`;
 }
@@ -950,7 +999,8 @@ function showResult() {
   if (skip) {
     h = `<div class="card"><h2>Дякуємо</h2><p class="sub">Ваші відповіді збережено. Вони будуть використані лише в агрегованому вигляді.</p>
       <div class="metric-note" id="sendStatus"></div>
-      <div class="nav"><div class="spacer"></div><button class="btn-glass-ghost" id="dl">Завантажити мої відповіді</button></div></div>`;
+      <div class="nav"><div class="spacer"></div><button class="btn-glass-ghost" id="dl">Завантажити мої відповіді</button></div></div>
+      ${inviteCardHtml()}`;
   } else {
     const m = MATURITY[r.matNow - 1] || ["—", ""];
     h = `<div class="card">
@@ -981,7 +1031,8 @@ function showResult() {
       <p class="sub">Дякуємо за участь. Ваші відповіді збережено й будуть використані лише в агрегованому вигляді.</p>
       <div class="metric-note" id="sendStatus"></div>
       <div class="nav"><div class="spacer"></div><button class="btn-glass-ghost" id="dl">Завантажити мої відповіді</button></div>
-    </div>`;
+    </div>
+    ${inviteCardHtml()}`;
   }
 
   $("#form").classList.add("hidden");
@@ -989,17 +1040,48 @@ function showResult() {
   $("#result").innerHTML = h;
   const dl = $("#dl");
   if (dl) dl.addEventListener("click", download);
+  bindInvite();
+}
+
+/* Координатор отримує посилання з кодом організації для колег;
+   респондент за посиланням — лише пояснення, що індекс зведе координатор. */
+function inviteCardHtml() {
+  if (!isCoordinator()) {
+    return `<div class="card"><h3>Що далі</h3>
+      <p class="sub" style="margin:0">Індекс організації складеться з відповідей усіх колег за кодом
+      <span class="code">${esc(ORG.code)}</span>. Його отримає координатор, коли анкету заповнять щонайменше 5 осіб.</p></div>`;
+  }
+  return `<div class="card"><h3>Запросіть колег</h3>
+    <p class="sub">Індекс організації рахується, коли анкету заповнять щонайменше 5 осіб. Посилання для колег містить код
+    <span class="code">${esc(ORG.code)}</span> і, за бажання, ваше імʼя.</p>
+    <div style="margin-bottom:14px"><label class="field-label" for="inviterName">Імʼя (необовʼязково)</label>
+      <input type="text" id="inviterName" value="${esc(ORG.name)}" autocomplete="name"></div>
+    <label class="field-label" for="invite">Посилання для колег</label>
+    <div class="invite"><input type="text" id="invite" value="${esc(inviteLink())}" readonly>
+      <button class="btn-glass-ghost" id="copy">Скопіювати</button></div></div>`;
+}
+
+function bindInvite() {
+  const copy = $("#copy");
+  if (copy) copy.addEventListener("click", () => {
+    const inp = $("#invite"); inp.select();
+    const done = () => { copy.textContent = "Скопійовано"; setTimeout(() => { copy.textContent = "Скопіювати"; }, 1800); };
+    if (navigator.clipboard) navigator.clipboard.writeText(inp.value).then(done, () => document.execCommand("copy") && done());
+    else { document.execCommand("copy"); done(); }
+  });
+  const nm = $("#inviterName");
+  if (nm) nm.addEventListener("input", (e) => { ORG.name = e.target.value; saveOrg(); $("#invite").value = inviteLink(); });
 }
 
 function setSendStatus(state) {
   const el = $("#sendStatus");
   if (!el) return;
   if (state === "sent") el.textContent = "Відповіді надіслано.";
-  else if (state === "failed") el.textContent = "Не вдалося надіслати відповіді. Скористайтеся кнопкою нижче й надішліть файл автору дослідження.";
+  else if (state === "failed") el.textContent = "Не вдалося надіслати відповіді. Скористайтеся кнопкою нижче, збережіть файл і надішліть його координатору анкети у вашій організації.";
 }
 
 function payload() {
-  return { answers: A, scores: score(), submitted_at: new Date().toISOString(), version: "3.2" };
+  return { org_code: ORG.code, answers: A, scores: score(), submitted_at: new Date().toISOString(), version: "3.2" };
 }
 
 function download() {
@@ -1024,6 +1106,7 @@ function row() {
   delete answers.email;          // email ніколи не потрапляє в анкету
   return {
     company: (A.company || "").trim(),
+    org_code: ORG.code,
     industry: pick("industry"),
     company_size: A.size || null,
     market: pick("market"),
@@ -1104,6 +1187,44 @@ function submit() {
   }
   return Promise.all(jobs).then(() => "sent").catch(() => "failed");
 }
+
+/* --------------------------------------------------------------------------
+   Старт: код організації з посилання або новий для координатора
+   -------------------------------------------------------------------------- */
+function resetAnswers() {
+  Object.keys(A).forEach((k) => delete A[k]);
+  save();
+}
+function startNewOrg() {
+  if (!confirm("Розпочати анкету для нової організації? Поточну чернетку в цьому браузері буде очищено.")) return;
+  resetAnswers();
+  Object.assign(ORG, { code: genCode(), fromLink: false, invitedBy: "", name: "" });
+  saveOrg();
+  step = 0; render();
+}
+(function bootOrg() {
+  const qs = new URLSearchParams(location.search);
+  if (qs.get("reset") !== null) { resetAnswers(); Object.assign(ORG, { code: "", fromLink: false, invitedBy: "", name: "" }); }
+  const v = (qs.get("org") || "").trim().toUpperCase();
+  const linkCode = CODE_RE.test(v) ? v : null;
+  if (linkCode) {
+    /* Посилання авторитетне: чернетка координатора або іншої організації в цьому браузері не має стати відповіддю за чужим кодом. */
+    if (ORG.code !== linkCode || !ORG.fromLink) resetAnswers();
+    Object.assign(ORG, { code: linkCode, fromLink: true, name: "" });
+    const from = (qs.get("from") || "").trim().replace(/\s+/g, " ").slice(0, 60);
+    ORG.invitedBy = from;
+  } else if (!ORG.code || ORG.fromLink) {
+    /* Без посилання — координатор нової організації; чернетку респондента не переносимо. */
+    if (ORG.fromLink) resetAnswers();
+    Object.assign(ORG, { code: genCode(), fromLink: false, invitedBy: "", name: "" });
+  }
+  saveOrg();
+  $("#inviteCtx").innerHTML = isCoordinator()
+    ? "<span>Ви запускаєте анкету для своєї організації. Наприкінці отримаєте посилання для колег.</span>"
+    : (ORG.invitedBy
+      ? `<span>Вас запросив(ла)</span><strong>${esc(ORG.invitedBy)}</strong><span>як одного з респондентів вашої організації.</span>`
+      : "<span>Вас запросили як одного з респондентів вашої організації.</span>");
+})();
 
 /* --------------------------------------------------------------------------
    Навігація

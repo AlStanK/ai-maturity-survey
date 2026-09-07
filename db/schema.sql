@@ -16,8 +16,12 @@ create table if not exists public.responses (
   created_at      timestamptz not null default now(),
 
   -- профіль компанії
+  -- org_code — унікальний код організації: генерується першому респонденту
+  -- (координатору), колеги отримують його в посиланні ?org=КОД. Саме код,
+  -- а не назва, зводить відповіді однієї організації (як у AI Readiness Diagnostic).
   company         text not null check (length(trim(company)) between 2 and 200),
-  company_key     text generated always as (lower(trim(company))) stored,
+  org_code        text not null check (org_code ~ '^[A-Z0-9]{4,12}$'),
+  company_key     text generated always as (lower(org_code)) stored,
   industry        text,
   company_size    text,
   market          text,
@@ -56,6 +60,8 @@ create table if not exists public.responses (
   version         text
 );
 
+-- Базу, розгорнуту до появи org_code, переводити скриптом
+-- db/migrate-2026-09-07-org-code.sql (company_key там перераховується з коду).
 -- Догляд за базою, розгорнутою до версії 3.2 анкети.
 alter table public.responses add column if not exists coverage_scope  text;
 alter table public.responses add column if not exists ai_awareness    text;
@@ -113,12 +119,14 @@ end $$;
 
 -- -----------------------------------------------------------------------------
 -- Порогове представлення: компанія показується лише за наявності ≥ 5 анкет.
--- Відповідає правилу конфіденційності дослідження.
+-- Відповідає правилу конфіденційності анкети.
 -- -----------------------------------------------------------------------------
 drop view if exists public.v_company_summary;
 create view public.v_company_summary as
 select
   company_key                                as company,
+  max(org_code)                              as org_code,
+  min(company)                               as company_name,
   max(industry)                              as industry,
   max(company_size)                          as company_size,
   count(*)                                   as responses,
@@ -163,7 +171,7 @@ having count(*) >= 5;
 
 -- -----------------------------------------------------------------------------
 -- Розрив у сприйнятті: керівництво проти виконавців у межах однієї компанії.
--- Центральний показник дослідження: якщо керівники бачать зрілість вищою,
+-- Центральний показник: якщо керівники бачать зрілість вищою,
 -- ніж команда, це і є розрив між усвідомленням і фактичною практикою.
 -- Alignment: 100 балів мінус 25 за кожен бал розбіжності (шкала 1–5).
 -- -----------------------------------------------------------------------------
