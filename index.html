@@ -285,7 +285,7 @@ hr.rule{border:0;border-top:1px solid var(--separator);margin:26px 0}
       </div>
       <div class="hero-art"><div class="hero-art-inner"><img src="assets/plato-hero.png" alt="" loading="eager" decoding="async"></div></div>
       <div class="facts">
-        <div class="fact"><b>51</b><span>питання</span></div>
+        <div class="fact"><b>50</b><span>питань</span></div>
         <div class="fact"><b>15</b><span>хвилин</span></div>
         <div class="fact"><b>0</b><span>персональних даних</span></div>
       </div>
@@ -617,11 +617,7 @@ const STEPS = [
     questions: [
       { id: "showResult", n: 50, type: "radio", required: true,
         label: "Показати ваш персональний результат одразу після завершення?",
-        options: ["Так, показати рівень зрілості та мої індекси", "Ні, дякую"] },
-      { id: "email", n: 51, type: "text",
-        label: "Надіслати підсумковий звіт, коли він буде готовий?",
-        hint: "Необов'язково. Зберігається окремим списком, не пов'язаним з вашими відповідями.",
-        placeholder: "email" }
+        options: ["Так, показати рівень зрілості та мої індекси", "Ні, дякую"] }
     ]
   }
 ];
@@ -643,6 +639,11 @@ const LS = {
 };
 
 const A = JSON.parse(LS.get("aimat_answers", "{}"));
+// Прибираємо адресу зі старої чернетки після вилучення підписки.
+if (Object.hasOwn(A, "email")) {
+  delete A.email;
+  LS.set("aimat_answers", JSON.stringify(A));
+}
 let step = 0;
 
 /* Код організації: 8 символів без 0/O/1/I. Генерується першому респонденту
@@ -1180,12 +1181,7 @@ function submit() {
 
   if (!API_URL && !SHEETS_URL) return Promise.resolve("local");
 
-  const email = (A.email || "").trim();
-  const jobs = [post("responses", row())];
-  if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-    jobs.push(post("report_subscribers", { email: email }).catch(() => true));
-  }
-  return Promise.all(jobs).then(() => "sent").catch(() => "failed");
+  return post("responses", row()).then(() => "sent").catch(() => "failed");
 }
 
 /* --------------------------------------------------------------------------
