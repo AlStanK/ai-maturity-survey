@@ -727,22 +727,32 @@ code, kbd, samp { font-family: var(--font-mono); }
 /* ---------------------------------------------------------------------------
    Конфігурація збору відповідей.
 
-   API_URL — корінь PostgREST, наприклад "https://api.example.com".
+   API_URL — корінь PostgREST-сумісного API. У продакшні це Neon Data API:
+   "https://<endpoint>.apirest.<region>.aws.neon.tech/survey/rest/v1".
    Поки порожній — локальний режим: дані лишаються в браузері
    й вивантажуються файлом.
 
+   AUTH_URL — база Neon Auth. Neon Data API приймає лише запити з JWT, тому
+   перед відправкою сторінка бере короткоживучий анонімний токен
+   (GET AUTH_URL/token/anonymous). Neon Auth один на гілку проєкту і
+   привʼязаний до бази `poll` (AI Readiness Diagnostic), тому шлях містить
+   /poll/auth, хоча дані йдуть у базу `survey`: токен для ролі anonymous
+   Data API обох баз приймає однаково. Порожній рядок = токен не потрібен
+   (звичайний PostgREST з анонімною роллю, як у deploy/docker-compose.yml).
+
    API_KEY потрібен лише там, де перед PostgREST стоїть шлюз із ключем
-   (наприклад Supabase). Для власного PostgREST лишіть порожнім:
+   (наприклад Supabase). Для Neon і власного PostgREST лишіть порожнім:
    доступ анонімної ролі обмежують гранти й політики RLS у самій базі.
    --------------------------------------------------------------------------- */
-const API_URL = "";
+const API_URL = "https://ep-orange-flower-b29e9zvj.apirest.c-6.eu-central-1.aws.neon.tech/survey/rest/v1";
+const AUTH_URL = "https://ep-orange-flower-b29e9zvj.neonauth.c-6.eu-central-1.aws.neon.tech/poll/auth";
 const API_KEY = "";
 
 /* SHEETS_URL — /exec адреса Apps Script Web App, який дописує відповіді
-   в Google Sheets (deploy/apps-script/Code.gs). Тимчасовий режим збору,
-   поки немає публічного Postgres. Якщо заповнені обидві адреси,
+   в Google Sheets (deploy/apps-script/Code.gs). Резервний режим збору
+   на випадок, коли Postgres недоступний. Якщо заповнені обидві адреси,
    пріоритет має API_URL. */
-const SHEETS_URL = "https://script.google.com/macros/s/AKfycbyzgeyQaPtxfcH7XN_q9oarx8l3YZDPP1yqwidSC15EmtgDwNSCM1krtLieThNSe6X_nw/exec";
+const SHEETS_URL = "";
 
 const LIKERT_ENDS = ["1 — категорично не згоден", "5 — повністю згоден"];
 
@@ -1460,6 +1470,13 @@ function postSheets(table, body) {
     .then((j) => { if (!j.ok) throw new Error(j.error || "sheets error"); return true; });
 }
 
+function anonToken() {
+  if (!AUTH_URL) return Promise.resolve(null);
+  return fetch(AUTH_URL.replace(/\/+$/, "") + "/token/anonymous")
+    .then((r) => { if (!r.ok) throw new Error("anon token " + r.status); return r.json(); })
+    .then((d) => d.token || d.access_token || d.jwt || (d.data && d.data.token) || null);
+}
+
 function post(table, body) {
   if (!API_URL && SHEETS_URL) return postSheets(table, body);
   const headers = { "Content-Type": "application/json", "Prefer": "return=minimal" };
@@ -1467,10 +1484,13 @@ function post(table, body) {
     headers["apikey"] = API_KEY;
     headers["Authorization"] = "Bearer " + API_KEY;
   }
-  return fetch(API_URL.replace(/\/+$/, "") + "/" + table, {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(body)
+  return anonToken().then((tok) => {
+    if (tok) headers["Authorization"] = "Bearer " + tok;
+    return fetch(API_URL.replace(/\/+$/, "") + "/" + table, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(body)
+    });
   }).then((r) => { if (!r.ok) throw new Error(r.status + " " + r.statusText); return true; });
 }
 
