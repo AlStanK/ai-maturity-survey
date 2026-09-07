@@ -2,662 +2,254 @@
 <html lang="uk">
 <head>
 <meta charset="utf-8">
+<meta name="theme-color" content="#f6f4ef">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Індекс ШІ-зрілості організаційної культури</title>
 <meta name="description" content="Анонімне дослідження культурної готовності компаній до системного використання штучного інтелекту. 13 хвилин, миттєвий результат.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ---- AInoia DS: tokens/fonts.css ---- */
 /* ==========================================================================
-   AInoia — Webfonts
-   Substituted from Google Fonts (no original binaries were provided):
-   - Jost            → geometric, thin, wide-tracking display (AInoia wordmark feel)
-   - Instrument Serif → editorial serif ITALIC — the new glass-shimmer hero voice
-   - Hanken Grotesk  → neutral humanist grotesque for UI + body (now also 800 extrabold,
-                       the heavy partner in the serif-italic / sans-extrabold display pair)
-   - JetBrains Mono  → data, metrics, code, agent IDs
-   Flag: confirm the exact wordmark typeface with the brand owner.
+   Індекс ШІ-зрілості · дизайн синхронізовано з AInoia AI Readiness Diagnostic
+   (HeroUI v3 anatomy × AInoia light "paper" colour scheme).
+   Токени й компоненти 1:1 з ai-readiness-diagnostic/index.html; класи
+   лишені як в анкеті (opt / lk / pair / metric …), щоб не чіпати скрипт.
    ========================================================================== */
+:root{
+  color-scheme:light;
+  /* AInoia light theme — surfaces */
+  --surface-page:#f6f4ef; --surface-raised:#fbfaf7; --surface-sunken:#eeebe3; --hairline:#e5e0d6; --marble-300:#d8d1c2;
+  /* AInoia light theme — ink */
+  --ink:#211e18; --ink-muted:#6e6557; --ink-faint:#6e6557; --ink-ghost:#b5ac9e;
+  /* AInoia accents (warm) */
+  --tan:#c0a080; --tan-bright:#d6bd9c; --tan-deep:#a67c52; --bronze:#8d6e4c; --clay:#b3906f;
+  --grad-cta:linear-gradient(100deg,var(--tan-bright) 0%,var(--tan-deep) 100%);
+  --fg-on-accent:#241a10;
+  --accent-tint:rgba(192,160,128,.10); --accent-tint-strong:rgba(192,160,128,.16); --accent-border:rgba(192,160,128,.40);
+  /* AInoia light theme — status */
+  --success:#6f8a52; --warning:#a97a2e; --danger:#a23c2e;
+  --success-tint:rgba(111,138,82,.12); --success-border:rgba(111,138,82,.40);
+  --warning-tint:rgba(169,122,46,.12); --warning-border:rgba(169,122,46,.40);
+  --danger-tint:#f4e2dd; --danger-border:rgba(162,60,46,.40);
+  --border-subtle:rgba(33,30,24,.05); --border-default:var(--hairline); --border-strong:rgba(33,30,24,.16);
+  --focus-ring:#7a5c3c;
 
-@import url("https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
-
-/* ---- AInoia DS: tokens/colors.css ---- */
-/* ==========================================================================
-   AInoia — Color tokens  (Warm Coffee theme)
-   Brand world re-skinned: a warm, editorial coffee canvas, paper-cream
-   light-side neutrals, and a signature tan → bronze → deep-coffee
-   "balance" gradient. Dark (coffee) is the default; the paper palette
-   lives in the marble-* tokens for light-side counterpoint sections.
-   ========================================================================== */
-
-:root {
-  /* --- Core neutrals (warm coffee dark) --------------------------------- */
-  --void: #1f1a16;          /* deepest background, true canvas */
-  --ink-900: #2d2621;       /* page background */
-  --ink-800: #342c26;       /* raised surface */
-  --ink-700: #3a322c;       /* panel / card */
-  --ink-600: #433a31;       /* elevated card */
-  --ink-500: #4a4039;       /* hover surface / input */
-  --ink-400: #59493e;       /* strong border / divider */
-  --ink-300: #6e5c4b;       /* muted line */
-
-  /* --- Paper (light side) ----------------------------------------------- */
-  --marble-50: #f5f1e6;     /* light section background */
-  --marble-100: #ece5d8;
-  --marble-200: #e2d8c3;
-  --marble-300: #d4c8aa;
-
-  /* --- Text ------------------------------------------------------------- */
-  --fg-1: #ece5d8;          /* primary text on dark */
-  --fg-2: #c5bcac;          /* secondary text */
-  --fg-3: #a2937f;          /* muted / captions */
-  --fg-4: #7d6f5d;          /* disabled / faint */
-  --fg-on-light: #4a3f35;   /* text on paper surfaces */
-
-  /* --- Signature accents (warm) ----------------------------------------- */
-  --cyan: #c0a080;          /* primary tan (philosophy spark) */
-  --cyan-bright: #d6bd9c;
-  --cyan-deep: #a67c52;
-  --blue: #a67c52;          /* mid bridge (bronze) */
-  --blue-deep: #8d6e4c;
-  --violet: #b3906f;        /* technology side (clay) */
-  --violet-bright: #c8a585;
-  --magenta: #b54a35;       /* terracotta circuit pop */
-
-  /* --- Signature gradients ---------------------------------------------- */
-  --grad-balance: linear-gradient(100deg, var(--cyan-bright) 0%, var(--cyan-deep) 48%, #735a3a 100%);
-  --grad-balance-soft: linear-gradient(100deg, var(--cyan-deep) 0%, var(--blue-deep) 50%, #735a3a 100%);
-  --grad-spark: radial-gradient(circle at 50% 50%, var(--cyan-bright) 0%, var(--cyan) 35%, transparent 72%);
-  --grad-hero: radial-gradient(120% 110% at 50% 0%, #3a322c 0%, var(--ink-900) 46%, var(--void) 100%);
-
-  /* --- Semantic / status ------------------------------------------------ */
-  --success: #7e9460;       /* warm sage */
-  --warning: #c79a4a;       /* amber */
-  --danger: #b54a35;        /* terracotta */
-  --info: var(--cyan);
-
-  /* --- Semantic surface aliases ----------------------------------------- */
-  --surface-page: var(--ink-900);
-  --surface-raised: var(--ink-800);
-  --surface-card: var(--ink-700);
-  --surface-card-hover: var(--ink-500);
-  --surface-overlay: rgba(31, 26, 22, 0.74);
-  --surface-light: var(--marble-50);
-
-  /* --- Borders (warm cream hairlines) ----------------------------------- */
-  --border-subtle: rgba(236, 229, 216, 0.07);
-  --border-default: rgba(236, 229, 216, 0.12);
-  --border-strong: rgba(236, 229, 216, 0.20);
-  --border-glow: rgba(192, 160, 128, 0.45);
-
-  /* --- Semantic text aliases -------------------------------------------- */
-  --text-heading: var(--fg-1);
-  --text-body: var(--fg-2);
-  --text-muted: var(--fg-3);
-  --text-accent: var(--cyan);
-  --text-link: var(--cyan-bright);
-
-  /* --- Focus / selection ------------------------------------------------ */
-  --focus-ring: rgba(192, 160, 128, 0.55);
-  --selection-bg: rgba(192, 160, 128, 0.28);
+  /* HeroUI semantic slots → AInoia values */
+  --radius:0.5rem; --field-radius:calc(var(--radius) * 1.5); --card-radius:calc(var(--radius) * 2);
+  --background:var(--surface-page); --foreground:var(--ink);
+  --surface:var(--surface-raised); --surface-secondary:var(--surface-sunken); --surface-tertiary:var(--hairline);
+  --muted:var(--ink-muted); --faint:var(--ink-faint);
+  --accent:var(--tan-deep); --accent-text:#7a5c3c; --accent-foreground:var(--fg-on-accent);
+  --border:var(--hairline); --separator:var(--hairline);
+  --field-background:var(--surface-raised); --field-foreground:var(--ink); --field-placeholder:var(--ink-faint);
+  --field-border-focus:var(--accent-text);
+  --field-shadow:0 2px 4px 0 rgba(33,30,24,.04),0 1px 2px 0 rgba(33,30,24,.05),0 0 1px 0 rgba(33,30,24,.06);
+  --font-sans:"Inter","Hanken Grotesk",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-display:"Jost","Century Gothic",system-ui,sans-serif;
+  --font-serif:"Instrument Serif",Georgia,serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --maxw:760px;
+  /* spacing, який використовує inline-розмітка у скрипті */
+  --space-4:16px; --space-6:24px;
+  --text-sm:13.5px; --text-base:15px;
 }
-
-/* ---- AInoia DS: tokens/typography.css ---- */
-/* ==========================================================================
-   AInoia — Typography tokens
-   Display = geometric thin + wide tracking (the AInoia wordmark voice).
-   Body = neutral grotesque. Mono = data & agent identifiers.
-   ========================================================================== */
-
-:root {
-  /* --- Families --------------------------------------------------------- */
-  --font-display: "Jost", "Century Gothic", system-ui, sans-serif;
-  --font-serif: "Instrument Serif", "Newsreader", Georgia, "Times New Roman", serif;
-  --font-body: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
-
-  /* --- Weights ---------------------------------------------------------- */
-  --weight-thin: 200;
-  --weight-light: 300;
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
-  --weight-extrabold: 800;   /* heavy sans partner in the glass display pair */
-
-  /* --- Type scale (fluid-friendly fixed px) ----------------------------- */
-  --text-2xs: 11px;
-  --text-xs: 12px;
-  --text-sm: 13px;
-  --text-base: 15px;
-  --text-md: 17px;
-  --text-lg: 20px;
-  --text-xl: 24px;
-  --text-2xl: 30px;
-  --text-3xl: 38px;
-  --text-4xl: 50px;
-  --text-5xl: 66px;
-  --text-6xl: 88px;
-
-  /* --- Line heights ----------------------------------------------------- */
-  --leading-tight: 1.08;
-  --leading-snug: 1.25;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.7;
-
-  /* --- Letter spacing --------------------------------------------------- */
-  --tracking-tightest: -0.02em;
-  --tracking-tight: -0.01em;
-  --tracking-normal: 0;
-  --tracking-wide: 0.04em;
-  --tracking-wider: 0.12em;
-  --tracking-widest: 0.34em;   /* the signature wordmark / eyebrow spacing */
-
-  /* --- Semantic roles --------------------------------------------------- */
-  --role-wordmark-family: var(--font-display);
-  --role-wordmark-weight: var(--weight-light);
-  --role-wordmark-tracking: var(--tracking-widest);
-
-  --role-display-family: var(--font-display);
-  --role-display-weight: var(--weight-light);
-
-  /* Glass display — the pixel-hero headline voice: serif italic + heavy sans,
-     filled with the animated glass shimmer (see .display-glass). */
-  --role-glass-serif-family: var(--font-serif);
-  --role-glass-serif-weight: var(--weight-regular);
-  --role-glass-sans-family: var(--font-body);
-  --role-glass-sans-weight: var(--weight-extrabold);
-
-  --role-eyebrow-family: var(--font-display);
-  --role-eyebrow-weight: var(--weight-medium);
-  --role-eyebrow-tracking: var(--tracking-widest);
-  --role-eyebrow-size: var(--text-xs);
-
-  --role-heading-family: var(--font-body);
-  --role-heading-weight: var(--weight-semibold);
-
-  --role-body-family: var(--font-body);
-  --role-body-weight: var(--weight-regular);
-  --role-body-size: var(--text-base);
-
-  --role-data-family: var(--font-mono);
-  --role-data-weight: var(--weight-medium);
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;padding:0}
+body{
+  background:var(--background);color:var(--foreground);
+  font:400 15px/1.6 var(--font-sans);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  font-feature-settings:"cv11","ss01";
 }
+::selection{background:rgba(192,160,128,.28);color:var(--ink)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.bg{display:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:32px 20px 96px}
+.hidden{display:none!important}
 
-/* ---- AInoia DS: tokens/spacing.css ---- */
-/* ==========================================================================
-   AInoia — Spacing, radii & layout tokens
-   8px base rhythm with a tight 4px sub-step.
-   ========================================================================== */
+/* типографіка */
+.brand{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-display);font-weight:400;letter-spacing:.34em;
+  text-transform:uppercase;font-size:12px;color:var(--ink-muted)}
+.brand::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--grad-cta);box-shadow:0 0 0 3px var(--accent-tint-strong)}
+h1{font-family:var(--font-sans);font-weight:700;letter-spacing:-.025em;
+  font-size:clamp(30px,5vw,42px);line-height:1.12;margin:18px 0 12px;color:var(--foreground)}
+h1 em{font-family:var(--font-serif);font-style:italic;font-weight:400;letter-spacing:0;color:var(--accent-text);font-size:1.08em}
+h2{font-family:var(--font-sans);font-weight:600;font-size:clamp(20px,3.2vw,24px);
+  line-height:1.25;margin:0 0 6px;letter-spacing:-.015em;color:var(--foreground)}
+p{margin:0 0 14px;color:var(--foreground)}
+.lede{font-size:17px;color:var(--muted);line-height:1.55;margin:0 0 14px}
+.antithesis{font-size:15.5px;line-height:1.6;color:var(--foreground);margin:-4px 0 18px}
+.sub{font-size:14px;color:var(--muted);margin:0 0 18px;line-height:1.55}
+.eyebrow,.section-h{display:block;font-family:var(--font-display);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+a{color:var(--accent-text);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--accent-border)}
+a:hover{text-decoration-color:var(--accent-text)}
+code,kbd,samp{font-family:var(--font-mono)}
 
-:root {
-  /* --- Spacing scale ---------------------------------------------------- */
-  --space-0: 0;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
-  --space-20: 80px;
-  --space-24: 96px;
-  --space-32: 128px;
+/* Hero (титульна): brand → h1 → lead, портрет праворуч */
+.hero{display:grid;grid-template-columns:1fr auto;gap:8px 28px;align-items:start;padding:0 0 22px}
+.hero-copy{min-width:0}
+.hero-art{grid-column:2;grid-row:1;width:clamp(96px,16vw,132px);aspect-ratio:1;border-radius:50%;
+  background:var(--surface-raised);border:1px solid var(--border);padding:6px;margin-top:6px}
+.hero-art-inner{width:100%;height:100%;border-radius:50%;overflow:hidden;position:relative;background:var(--surface-sunken)}
+.hero-art img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block;
+  filter:grayscale(1) sepia(.85) saturate(1.6) hue-rotate(-8deg) brightness(1.08) contrast(.98)}
+.hero-art-inner::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,transparent 58%,rgba(246,244,239,.9) 100%)}
+.hero h1{margin-top:18px}
+.facts{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 0}
+.fact{background:var(--surface);border:1px solid var(--border);border-radius:var(--field-radius);padding:12px 14px}
+.fact b{display:block;font-weight:700;font-size:22px;letter-spacing:-.02em;line-height:1.1;color:var(--foreground);font-variant-numeric:tabular-nums}
+.fact span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.4;text-transform:none;letter-spacing:0}
 
-  /* --- Radii ------------------------------------------------------------ */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
-  --radius-2xl: 28px;
-  --radius-pill: 999px;
-  --radius-circle: 50%;
+/* Card (surface.raised + hairline) */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-radius);padding:24px;box-shadow:none;margin-bottom:16px}
+.card h2{margin-bottom:6px}
+.consent{font-size:14.5px;line-height:1.55;color:var(--foreground)}
+.consent p{margin:0 0 12px}
+.consent strong{color:var(--foreground);font-weight:600}
+/* Alert · faded · primary */
+.note,.legend{background:var(--accent-tint);border:1px solid var(--accent-border);
+  border-radius:var(--field-radius);padding:12px 16px;margin:0 0 18px;color:var(--foreground);font-size:14px;line-height:1.55}
+.note strong{color:var(--accent-text)}
+.legend{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:13.5px}
+.legend b{color:var(--accent-text);font-weight:600}
+.anchors{display:grid;gap:4px;margin-top:8px;padding-top:10px;border-top:1px solid var(--accent-border)}
+.anchors span{font-size:12.5px;color:var(--muted)}
+.anchors span b{color:var(--foreground);font-weight:600}
 
-  /* --- Layout ----------------------------------------------------------- */
-  --container-sm: 640px;
-  --container-md: 960px;
-  --container-lg: 1200px;
-  --container-xl: 1440px;
-  --gutter: var(--space-6);
+/* Progress (sticky navbar) */
+.progress-bar{position:sticky;top:0;z-index:20;background:rgba(246,244,239,.82);
+  backdrop-filter:blur(12px) saturate(160%);-webkit-backdrop-filter:blur(12px) saturate(160%);
+  border-bottom:1px solid var(--separator);margin:-32px -20px 26px;padding:12px 20px}
+.progress-track{max-width:var(--maxw);margin:0 auto;height:8px;background:var(--surface-sunken);border-radius:9999px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--grad-cta);border-radius:9999px;transition:width .42s cubic-bezier(.22,1,.36,1)}
+.progress-meta{max-width:var(--maxw);margin:6px auto 0;display:flex;justify-content:space-between;gap:4px 16px;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums}
 
-  /* --- Control sizing --------------------------------------------------- */
-  --control-h-sm: 32px;
-  --control-h-md: 40px;
-  --control-h-lg: 48px;
-  --icon-stroke: 1.5;        /* line-icon stroke width (thin, single weight) */
+/* Питання */
+.q,.pair{border-top:1px solid var(--separator);padding:20px 0 16px}
+.q:first-of-type,.pair:first-of-type,.legend + .pair,.sub + .q,.sub + .pair,h2 + .q,h2 + .pair{border-top:0;padding-top:4px}
+.q-label,.pair-title{display:block;font-weight:600;font-size:16px;line-height:1.45;margin-bottom:14px;color:var(--foreground);letter-spacing:-.005em}
+.q-num{display:inline-block;font-family:var(--font-mono);font-size:11px;color:var(--accent-text);
+  background:var(--accent-tint);border:1px solid var(--accent-border);border-radius:9999px;padding:2px 9px;letter-spacing:.04em;
+  margin:0 8px 2px 0;font-weight:500;vertical-align:middle}
+.q-hint,.pair-desc{font-size:13.5px;color:var(--muted);margin:-8px 0 14px;line-height:1.5}
+.req{color:var(--danger);font-weight:500}
+.opts{display:flex;flex-direction:column;gap:2px;margin-top:0}
+
+/* Radio / Checkbox як tile (Radio.Content card pattern) */
+label.opt{display:flex;gap:12px;align-items:flex-start;min-height:44px;padding:10px 12px;cursor:pointer;
+  background:transparent;border:1px solid transparent;border-radius:var(--field-radius);
+  font-size:15px;line-height:1.45;color:var(--foreground);
+  transition:border-color .13s,background .13s,box-shadow .13s,transform .1s;box-shadow:none}
+label.opt:hover{background:var(--surface-secondary);border-color:var(--border-strong)}
+label.opt:active{transform:scale(.995)}
+label.opt:has(input:checked){border-color:var(--accent-border);background:var(--accent-tint)}
+label.opt:has(input:checked):hover{background:var(--accent-tint-strong)}
+label.opt:has(input:disabled){cursor:not-allowed}
+/* Radio.Control 20px · 1.5px hairline · dot grad-cta */
+label.opt input{appearance:none;-webkit-appearance:none;margin:2px 0 0;flex:none;width:20px;height:20px;cursor:pointer;
+  border:1.5px solid var(--ink-muted);background:transparent;border-radius:9999px;display:grid;place-items:center;
+  transition:border-color .13s,background .13s,box-shadow .13s,transform .1s}
+label.opt input[type=checkbox]{border-radius:6px}
+label.opt input:hover{border-color:var(--ink);background:var(--surface-sunken)}
+label.opt input:active{transform:scale(.92)}
+label.opt input[type=radio]:checked{border-color:var(--tan-deep);background:transparent}
+label.opt input[type=radio]::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--grad-cta);
+  transform:scale(0);transition:transform .13s cubic-bezier(.16,1.1,.3,1)}
+label.opt input[type=radio]:checked::after{transform:scale(1)}
+label.opt input[type=checkbox]:checked{border-color:var(--accent-text);background:var(--grad-cta)}
+label.opt input[type=checkbox]::after{content:"";width:10px;height:6px;border-left:2.2px solid var(--fg-on-accent);
+  border-bottom:2.2px solid var(--fg-on-accent);transform:translateY(-1px) rotate(-45deg) scale(.6);opacity:0;
+  transition:transform .13s cubic-bezier(.16,1.1,.3,1),opacity .13s}
+label.opt input[type=checkbox]:checked::after{transform:translateY(-1px) rotate(-45deg) scale(1);opacity:1}
+label.opt input:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+label.opt input[disabled]{opacity:.5;cursor:not-allowed}
+.opt-body{display:grid;gap:2px;flex:1;min-width:0}
+.opt-lvl{font-family:var(--font-mono);font-size:11px;color:var(--faint);letter-spacing:.04em}
+.opt-name{font-weight:600;color:var(--foreground)}
+.opt-desc{font-size:13.5px;color:var(--muted);line-height:1.5}
+.other-wrap{margin-top:9px;padding-left:0}
+.other-wrap input{height:40px;font-size:14px}
+
+/* Likert 1–5 як tile-кнопки */
+.likert{display:flex;gap:6px;margin-top:0;flex-wrap:wrap}
+.lk{flex:1 1 0;min-width:44px;position:relative}
+.lk input{position:absolute;opacity:0;pointer-events:none}
+.lk span{display:flex;align-items:center;justify-content:center;height:44px;
+  background:var(--field-background);border:1px solid var(--border-strong);border-radius:var(--field-radius);
+  font-family:var(--font-mono);font-size:14px;color:var(--muted);cursor:pointer;font-variant-numeric:tabular-nums;
+  transition:border-color .13s,background .13s,color .13s,transform .1s}
+.lk.na{flex:0 0 66px}
+.lk.na span{font-family:var(--font-sans);font-size:13px}
+.lk span:hover{background:var(--surface-secondary);border-color:var(--ink);color:var(--foreground)}
+.lk span:active{transform:scale(.97)}
+.lk input:checked + span{background:var(--accent-tint);border-color:var(--tan-deep);color:var(--accent-text);font-weight:600;
+  box-shadow:inset 0 0 0 1px var(--tan-deep)}
+.lk input:focus-visible + span{outline:2px solid var(--focus-ring);outline-offset:2px}
+.scale-ends{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:8px}
+
+/* Парна матриця «Зараз / Потрібно» */
+.pair-row{display:grid;grid-template-columns:92px 1fr;gap:10px;align-items:center;margin-bottom:10px}
+.pair-tag{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.pair-tag.need{color:var(--accent-text)}
+
+/* Input (field-*) */
+input[type=text],input[type=email],textarea{
+  width:100%;height:44px;background:var(--field-background);color:var(--field-foreground);border:1px solid var(--ink-muted);
+  border-radius:var(--field-radius);padding:0 14px;font:400 15px/1.5 var(--font-sans);box-shadow:var(--field-shadow);
+  transition:box-shadow .13s,border-color .13s}
+textarea{height:auto;min-height:104px;padding:10px 14px;resize:vertical}
+input[type=text]:hover,input[type=email]:hover,textarea:hover{border-color:var(--ink)}
+input[type=text]:focus,input[type=email]:focus,textarea:focus{outline:0;border-color:var(--field-border-focus);
+  box-shadow:var(--field-shadow),0 0 0 2px var(--background),0 0 0 4px var(--focus-ring)}
+input::placeholder,textarea::placeholder{color:var(--field-placeholder)}
+
+/* Button: primary = grad-cta + fg-on-accent, ghost = hairline */
+.nav{display:flex;gap:10px;margin-top:28px;align-items:center}
+.nav .spacer{flex:1}
+button{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 22px;
+  font:600 15px/1 var(--font-sans);border-radius:var(--field-radius);cursor:pointer;border:1px solid transparent;
+  transition:background .13s,color .13s,border-color .13s,transform .1s,box-shadow .13s,opacity .13s;user-select:none;white-space:nowrap}
+button:active{transform:scale(.97)}
+.btn-glass{background:var(--grad-cta);color:var(--fg-on-accent);box-shadow:none}
+.btn-glass:hover{background:var(--tan-bright)}
+.btn-glass-ghost{background:var(--surface-raised);color:var(--foreground);border-color:var(--border-strong)}
+.btn-glass-ghost:hover{background:var(--surface-sunken)}
+button[disabled]{opacity:.5;cursor:not-allowed;transform:none}
+.err{display:none;color:var(--danger);font-size:13.5px;margin-top:12px}
+.err.on{display:block}
+
+/* Результат */
+.result-hero{padding:4px 0 8px}
+.result-lvl{font-family:var(--font-sans);font-size:clamp(48px,10vw,72px);font-weight:700;letter-spacing:-.04em;
+  line-height:1;background:linear-gradient(100deg,var(--tan-deep) 0%,var(--bronze) 60%,#735a3a 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-variant-numeric:tabular-nums;display:inline-block}
+.result-name{font-family:var(--font-sans);font-weight:600;letter-spacing:-.02em;font-size:clamp(21px,4vw,28px);margin:12px 0 4px;color:var(--foreground)}
+.result-hero .lede{font-size:15px}
+.result-hero .antithesis{margin:0}
+.metric{display:grid;grid-template-columns:1fr auto;gap:6px 14px;align-items:center;margin:14px 0}
+.metric-top{display:contents}
+.metric-name{font-size:14.5px;color:var(--foreground)}
+.metric-val{font-family:var(--font-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.metric-track{grid-column:1/-1;height:8px;background:var(--surface-sunken);border-radius:9999px;overflow:hidden}
+.metric-fill{height:100%;background:var(--grad-cta);border-radius:9999px;transition:width .42s cubic-bezier(.22,1,.36,1)}
+.metric-note{grid-column:1/-1;color:var(--muted);font-size:12.5px;line-height:1.55;margin:0}
+.gap-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 14px;margin-bottom:6px;font-size:14.5px;
+  background:var(--surface-page);border:1px solid var(--border);border-radius:var(--field-radius)}
+.gap-val{font-family:var(--font-mono);font-size:13px;color:var(--warning);font-variant-numeric:tabular-nums}
+hr.rule{border:0;border-top:1px solid var(--separator);margin:26px 0}
+
+@media (max-width:560px){
+  .wrap{padding:22px 15px 80px} .progress-bar{margin:-22px -15px 20px;padding:11px 15px}
+  .card{padding:18px} button{padding:0 18px;font-size:14.5px}
+  .hero{grid-template-columns:1fr} .hero-art{grid-column:1;grid-row:1;width:84px;margin-top:0}
+  .facts{gap:8px} .fact{padding:10px 12px} .fact b{font-size:19px}
+  .pair-row{grid-template-columns:1fr;gap:4px} .lk.na{flex:1 1 44px}
 }
-
-/* ---- AInoia DS: tokens/effects.css ---- */
-/* ==========================================================================
-   AInoia — Effects: shadows, glows, blur, motion
-   Light is the brand's material. Accents glow; surfaces stay matte.
-   ========================================================================== */
-
-:root {
-  /* --- Elevation (warm dark: shadows are deep + soft) ------------------- */
-  --shadow-sm: 0 1px 2px rgba(24, 18, 13, 0.45);
-  --shadow-md: 0 6px 18px rgba(24, 18, 13, 0.48);
-  --shadow-lg: 0 18px 42px rgba(24, 18, 13, 0.55);
-  --shadow-xl: 0 34px 80px rgba(24, 18, 13, 0.62);
-
-  /* --- Signature glows (warm tan / clay) -------------------------------- */
-  --glow-cyan: 0 0 24px rgba(192, 160, 128, 0.42);
-  --glow-cyan-sm: 0 0 12px rgba(192, 160, 128, 0.38);
-  --glow-violet: 0 0 24px rgba(179, 144, 111, 0.42);
-  --glow-balance: 0 0 0 1px rgba(192, 160, 128, 0.25), 0 0 28px rgba(192, 160, 128, 0.30), 0 0 40px rgba(179, 144, 111, 0.20);
-
-  /* --- Inner detailing -------------------------------------------------- */
-  --inset-hairline: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-  --inset-top-light: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-
-  /* --- Glass: shimmer display + glass-raised controls (warm) ------------ */
-  /* Frosted glass headline fill — a moving warm-cream sweep clipped to text. */
-  --glass-shimmer: linear-gradient(135deg,
-      rgba(245,241,230,1) 0%, rgba(245,241,230,0.45) 25%, rgba(245,241,230,0.12) 45%,
-      rgba(245,241,230,0.95) 55%, rgba(245,241,230,0.22) 75%, rgba(245,241,230,1) 100%); /* @kind other */
-  --glass-text-stroke: 1.5px rgba(245, 241, 230, 0.28);
-  --glass-text-shadow: drop-shadow(0 15px 35px rgba(24,18,13,0.50)) drop-shadow(0 5px 10px rgba(24,18,13,0.30));
-  --dur-shimmer: 8s;      /* @kind other */
-  /* Glassy controls: inset top-light + layered warm deep drop */
-  --shadow-glass-raised: inset 0 1px 1px rgba(245,241,230,0.30), 0 2px 4px rgba(24,18,13,0.32), 0 12px 24px rgba(24,18,13,0.42);
-  --shadow-glass-flat: inset 0 1px 1px rgba(245,241,230,0.10), 0 2px 4px rgba(24,18,13,0.24), 0 12px 24px rgba(24,18,13,0.34);
-  --blur-glass: blur(14px) saturate(150%); /* @kind other */
-
-  /* --- Blur ------------------------------------------------------------- */
-  --blur-overlay: blur(18px) saturate(140%); /* @kind other */
-  --blur-subtle: blur(8px); /* @kind other */
-
-  /* --- Motion ----------------------------------------------------------- */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);     /* @kind other */ /* calm settle */
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);  /* @kind other */
-  --ease-spark: cubic-bezier(0.16, 1.1, 0.3, 1);  /* @kind other */ /* gentle overshoot */
-  --dur-fast: 130ms;       /* @kind other */
-  --dur-base: 220ms;       /* @kind other */
-  --dur-slow: 420ms;       /* @kind other */
-  --dur-ambient: 6s;       /* @kind other */ /* ambient gradient drift */
-
-  /* --- Z-index ---------------------------------------------------------- */
-  --z-base: 1;          /* @kind other */
-  --z-sticky: 100;      /* @kind other */
-  --z-overlay: 800;     /* @kind other */
-  --z-modal: 900;       /* @kind other */
-  --z-toast: 1000;      /* @kind other */
-}
-
-/* Glass shimmer sweep (drives .display-glass; neutralized under reduced-motion) */
-@keyframes ainoia-shimmer {
-  0%   { background-position: 200% center; }
-  100% { background-position: 0% center; }
-}
-
-/* Global selection + reduced-motion courtesy */
-::selection { background: var(--selection-bg); color: var(--fg-1); }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
-}
-
-/* ---- AInoia DS: tokens/base.css ---- */
-/* ==========================================================================
-   AInoia — Base element styling
-   Opt-in primitives that apply the token system to raw HTML.
-   ========================================================================== */
-
-*, *::before, *::after { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--surface-page);
-  color: var(--text-body);
-  font-family: var(--font-body);
-  font-size: var(--role-body-size);
-  font-weight: var(--weight-regular);
-  line-height: var(--leading-normal);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-/* Wordmark / display helpers ------------------------------------------- */
-.codis-wordmark {
-  font-family: var(--role-wordmark-family);
-  font-weight: var(--role-wordmark-weight);
-  letter-spacing: var(--role-wordmark-tracking);
-  text-transform: uppercase;
-  color: var(--fg-1);
-}
-.codis-wordmark .ai {
-  background: var(--grad-balance);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.eyebrow {
-  font-family: var(--role-eyebrow-family);
-  font-weight: var(--role-eyebrow-weight);
-  letter-spacing: var(--role-eyebrow-tracking);
-  font-size: var(--role-eyebrow-size);
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.display {
-  font-family: var(--role-display-family);
-  font-weight: var(--role-display-weight);
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
-  color: var(--fg-1);
-}
-
-.text-gradient {
-  background: var(--grad-balance);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* Glass shimmer display — the pixel-hero headline voice ------------------ */
-/* Frosted, animated headline. Pair .serif (italic) and .sans (extrabold)
-   spans inside for the editorial serif-italic / heavy-sans rhythm. */
-.display-glass {
-  color: transparent;
-  background: var(--glass-shimmer);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-stroke: var(--glass-text-stroke);
-  filter: var(--glass-text-shadow);
-  animation: ainoia-shimmer var(--dur-shimmer) linear infinite;
-  line-height: var(--leading-tight);
-}
-.display-glass .serif {
-  font-family: var(--role-glass-serif-family);
-  font-weight: var(--role-glass-serif-weight);
-  font-style: italic;
-}
-.display-glass .sans {
-  font-family: var(--role-glass-sans-family);
-  font-weight: var(--role-glass-sans-weight);
-  letter-spacing: var(--tracking-tightest);
-}
-
-/* Glass controls — inset top-light + layered deep drop ------------------- */
-.btn-glass, .btn-glass-ghost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: var(--control-h-lg);
-  padding: 0 26px;
-  border-radius: var(--radius-lg);
-  font-family: var(--font-body);
-  font-weight: var(--weight-semibold);
-  font-size: var(--text-sm);
-  border: 0;
-  cursor: pointer;
-  text-decoration: none;
-  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
-}
-.btn-glass {
-  background: linear-gradient(to bottom, var(--cyan-bright), var(--cyan-deep));
-  color: #06121a;
-  box-shadow: var(--shadow-glass-raised);
-}
-.btn-glass-ghost {
-  background: linear-gradient(to bottom, rgba(58,50,44,0.82), rgba(58,50,44,1));
-  color: var(--fg-1);
-  border: 1px solid var(--border-default);
-  box-shadow: var(--shadow-glass-flat);
-  -webkit-backdrop-filter: var(--blur-glass);
-  backdrop-filter: var(--blur-glass);
-}
-.btn-glass:hover, .btn-glass-ghost:hover { transform: scale(1.02); text-decoration: none; }
-.btn-glass:active, .btn-glass-ghost:active { transform: scale(0.98); }
-
-a { color: var(--text-link); text-decoration: none; }
-a:hover { text-decoration: underline; text-underline-offset: 3px; }
-
-:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
-code, kbd, samp { font-family: var(--font-mono); }
-
-</style>
-<style>
-  html { scroll-behavior: smooth; }
-  body { background: var(--surface-page); }
-
-  /* ---------- SoftUI: м'який рельєф замість рамок ---------- */
-  :root {
-    --soft-lo: rgba(18, 13, 9, 0.62);          /* глибока тінь */
-    --soft-hi: rgba(255, 242, 224, 0.045);     /* світло згори-зліва */
-    --soft-out:    9px 9px 20px var(--soft-lo), -9px -9px 20px var(--soft-hi);
-    --soft-out-sm: 5px 5px 12px var(--soft-lo), -5px -5px 12px var(--soft-hi);
-    --soft-out-xs: 3px 3px 7px var(--soft-lo),  -3px -3px 7px var(--soft-hi);
-    --soft-in:     inset 7px 7px 14px var(--soft-lo), inset -7px -7px 14px var(--soft-hi);
-    --soft-in-sm:  inset 4px 4px 9px var(--soft-lo),  inset -4px -4px 9px var(--soft-hi);
-    --soft-surface: linear-gradient(145deg, #3a322b, #2c2520);
-  }
-
-  .bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: var(--grad-hero); }
-  .bg::after {
-    content: ""; position: absolute; inset: 0;
-    background: radial-gradient(60% 45% at 50% -10%, rgba(192,160,128,0.14) 0%, transparent 70%);
-  }
-  .wrap { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; padding: 0 var(--space-6) var(--space-24); }
-
-  /* ---------- Hero ---------- */
-  .hero { padding: var(--space-16) 0 var(--space-12); text-align: center; }
-  .hero-art {
-    width: clamp(180px, 34vw, 260px); margin: 0 auto var(--space-8);
-    aspect-ratio: 1; border-radius: var(--radius-circle);
-    background: var(--soft-surface); box-shadow: var(--soft-out);
-    display: flex; align-items: center; justify-content: center; padding: 14px;
-  }
-  .hero-art-inner {
-    width: 100%; height: 100%; border-radius: var(--radius-circle);
-    box-shadow: var(--soft-in-sm); overflow: hidden; position: relative;
-    background: var(--void);
-  }
-  .hero-art img {
-    width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%;
-    display: block;
-    /* холодний оригінал зводимо до теплої палітри системи */
-    /* grayscale знімає холодний ціан, далі sepia фарбує в тон системи */
-    filter: grayscale(1) sepia(0.92) saturate(2.4) hue-rotate(-8deg) brightness(1.02) contrast(1.06);
-  }
-  .hero-art-inner::after {
-    content: ""; position: absolute; inset: 0; border-radius: var(--radius-circle);
-    background: radial-gradient(circle at 50% 50%, transparent 52%, rgba(45,38,33,0.92) 100%);
-  }
-  .hero h1 {
-    font-family: var(--font-display); font-weight: var(--weight-light);
-    font-size: clamp(32px, 6vw, var(--text-4xl)); line-height: var(--leading-tight);
-    letter-spacing: var(--tracking-tight); color: var(--fg-1); margin: 0 0 var(--space-5);
-  }
-  .hero h1 em { font-style: normal; background: var(--grad-balance); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .lede { font-size: var(--text-md); color: var(--text-muted); max-width: 54ch; margin: 0 auto; line-height: var(--leading-relaxed); }
-  .antithesis {
-    font-family: var(--font-display); font-weight: var(--weight-light);
-    font-size: var(--text-lg); color: var(--fg-2); margin: var(--space-8) 0 0; letter-spacing: var(--tracking-wide);
-  }
-  .facts { display: flex; justify-content: center; gap: var(--space-4); flex-wrap: wrap; margin-top: var(--space-10); }
-  .fact {
-    text-align: center; padding: var(--space-4) var(--space-6);
-    border-radius: var(--radius-lg); background: var(--soft-surface); box-shadow: var(--soft-out-sm);
-    min-width: 104px;
-  }
-  .fact b { display: block; font-family: var(--font-mono); font-size: var(--text-xl); color: var(--cyan-bright); font-weight: var(--weight-medium); }
-  .fact span { font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: var(--tracking-wider); color: var(--fg-4); }
-
-  /* ---------- Card ---------- */
-  .card {
-    background: var(--soft-surface); border: 0;
-    border-radius: var(--radius-2xl); padding: var(--space-8);
-    box-shadow: var(--soft-out); margin-bottom: var(--space-6);
-  }
-  .card h2 {
-    font-family: var(--font-display); font-weight: var(--weight-light);
-    font-size: var(--text-xl); color: var(--fg-1); margin: 0 0 var(--space-2); letter-spacing: var(--tracking-tight);
-  }
-  .card .sub { font-size: var(--text-sm); color: var(--text-muted); margin: 0 0 var(--space-6); line-height: var(--leading-relaxed); }
-  .consent { font-size: var(--text-sm); line-height: var(--leading-relaxed); color: var(--text-body); }
-  .consent p { margin: 0 0 var(--space-4); }
-  .consent strong { color: var(--fg-1); font-weight: var(--weight-semibold); }
-  .note {
-    padding: var(--space-5); border-radius: var(--radius-lg);
-    box-shadow: var(--soft-in-sm); font-size: var(--text-sm);
-    color: var(--text-muted); margin: var(--space-5) 0;
-  }
-
-  /* ---------- Progress ---------- */
-  .progress-bar { position: sticky; top: 0; z-index: var(--z-sticky); background: var(--surface-page); padding: var(--space-4) 0 var(--space-5); margin-bottom: var(--space-6); }
-  .progress-track { height: 10px; border-radius: var(--radius-pill); box-shadow: var(--soft-in-sm); overflow: hidden; padding: 2px; }
-  .progress-fill { height: 100%; width: 0%; border-radius: var(--radius-pill); background: var(--grad-balance); box-shadow: var(--glow-cyan-sm); transition: width var(--dur-slow) var(--ease-out); }
-  .progress-meta { display: flex; justify-content: space-between; margin-top: var(--space-3); font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: var(--tracking-wider); color: var(--fg-4); }
-
-  /* ---------- Questions ---------- */
-  .q { padding: var(--space-6) 0; }
-  .q + .q { border-top: 1px solid rgba(255,242,224,0.035); }
-  .q-label { display: block; font-size: var(--text-base); color: var(--fg-1); line-height: var(--leading-snug); margin-bottom: var(--space-2); }
-  .q-num { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--cyan-deep); margin-right: var(--space-2); }
-  .q-hint { font-size: var(--text-xs); color: var(--fg-4); margin-bottom: var(--space-4); }
-  .req { color: var(--danger); }
-
-  .opts { display: flex; flex-direction: column; gap: var(--space-3); margin-top: var(--space-4); }
-  .opt {
-    display: flex; align-items: flex-start; gap: var(--space-3); cursor: pointer;
-    padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); border: 0;
-    background: var(--soft-surface); box-shadow: var(--soft-out-xs);
-    font-size: var(--text-sm); color: var(--text-body); line-height: var(--leading-snug);
-    transition: box-shadow var(--dur-base) var(--ease-out), color var(--dur-fast) var(--ease-out);
-  }
-  .opt:hover { box-shadow: var(--soft-out-sm); }
-  .opt-body { display: grid; gap: var(--space-1); }
-  .opt-lvl { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--cyan-deep); letter-spacing: var(--tracking-wide); }
-  .opt-name { color: var(--fg-1); font-weight: var(--weight-semibold); }
-  .opt-desc { font-size: var(--text-xs); color: var(--fg-4); line-height: var(--leading-relaxed); }
-  .opt input { margin: 2px 0 0; accent-color: var(--cyan); width: 15px; height: 15px; flex: none; }
-  .opt:has(input:checked) {
-    background: linear-gradient(145deg, #241e19, #2f2822);
-    box-shadow: var(--soft-in-sm), 0 0 0 1px rgba(192,160,128,0.24);
-    color: var(--fg-1);
-  }
-
-  .likert { display: flex; gap: var(--space-3); margin-top: var(--space-4); flex-wrap: wrap; }
-  .lk { flex: 1 1 0; min-width: 46px; }
-  .lk input { position: absolute; opacity: 0; pointer-events: none; }
-  .lk span {
-    display: flex; align-items: center; justify-content: center; height: var(--control-h-lg);
-    border: 0; border-radius: var(--radius-lg);
-    background: var(--soft-surface); box-shadow: var(--soft-out-xs);
-    font-family: var(--font-mono); font-size: var(--text-sm); color: var(--fg-3); cursor: pointer;
-    transition: box-shadow var(--dur-base) var(--ease-out), color var(--dur-fast) var(--ease-out);
-  }
-  .lk.na { flex: 0 0 66px; }
-  .lk.na span { font-family: var(--font-body); font-size: var(--text-xs); }
-  .lk span:hover { box-shadow: var(--soft-out-sm); color: var(--fg-1); }
-  .lk input:checked + span {
-    background: linear-gradient(145deg, #241e19, #2f2822);
-    box-shadow: var(--soft-in), 0 0 0 1px rgba(192,160,128,0.28);
-    color: var(--cyan-bright); font-weight: var(--weight-semibold);
-    text-shadow: 0 0 16px rgba(214,189,156,0.55);
-  }
-  .lk input:focus-visible + span { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-  .scale-ends { display: flex; justify-content: space-between; font-size: var(--text-2xs); color: var(--fg-4); margin-top: var(--space-3); }
-
-  /* ---------- Paired matrix ---------- */
-  .pair { padding: var(--space-6) 0; }
-  .pair + .pair { border-top: 1px solid rgba(255,242,224,0.035); }
-  .pair-title { font-size: var(--text-base); color: var(--fg-1); margin-bottom: var(--space-1); }
-  .pair-desc { font-size: var(--text-xs); color: var(--fg-4); margin-bottom: var(--space-4); }
-  .pair-row { display: grid; grid-template-columns: 92px 1fr; gap: var(--space-3); align-items: center; margin-bottom: var(--space-3); }
-  .pair-tag { font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: var(--tracking-wider); color: var(--fg-3); }
-  .pair-tag.need { color: var(--cyan); }
-  .legend {
-    display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--text-xs);
-    color: var(--text-muted); margin-bottom: var(--space-6); padding: var(--space-5);
-    border-radius: var(--radius-lg); box-shadow: var(--soft-in-sm);
-  }
-  .legend b { color: var(--fg-1); font-weight: var(--weight-semibold); }
-  .anchors { display: grid; gap: var(--space-1); margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid rgba(255,242,224,0.05); }
-  .anchors span { font-size: var(--text-2xs); color: var(--fg-4); }
-  .anchors span b { color: var(--fg-2); font-weight: var(--weight-semibold); }
-
-  /* ---------- Inputs ---------- */
-  input[type="text"], input[type="email"], textarea {
-    width: 100%; background: var(--ink-900); border: 0;
-    border-radius: var(--radius-lg); color: var(--fg-1); font-family: var(--font-body);
-    font-size: var(--text-sm); padding: 0 var(--space-5); height: var(--control-h-lg);
-    box-shadow: var(--soft-in-sm);
-    transition: box-shadow var(--dur-base) var(--ease-out);
-  }
-  textarea { height: auto; min-height: 104px; padding: var(--space-4) var(--space-5); resize: vertical; line-height: var(--leading-normal); }
-  input:focus, textarea:focus { outline: none; box-shadow: var(--soft-in-sm), 0 0 0 2px var(--focus-ring); }
-  input::placeholder, textarea::placeholder { color: var(--fg-4); }
-  .other-wrap { margin-top: var(--space-3); padding-left: var(--space-5); }
-  .other-wrap input { height: var(--control-h-md); font-size: var(--text-xs); }
-
-  /* ---------- Buttons (SoftUI) ---------- */
-  .btn-glass, .btn-glass-ghost {
-    height: var(--control-h-lg); padding: 0 30px; border: 0; border-radius: var(--radius-lg);
-    font-family: var(--font-body); font-weight: var(--weight-semibold); font-size: var(--text-sm);
-    cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-    transition: box-shadow var(--dur-base) var(--ease-out), transform var(--dur-fast) var(--ease-out);
-    -webkit-backdrop-filter: none; backdrop-filter: none;
-  }
-  .btn-glass {
-    background: linear-gradient(145deg, var(--cyan-bright), var(--cyan-deep));
-    color: #2a1e12; box-shadow: var(--soft-out-sm);
-  }
-  .btn-glass-ghost { background: var(--soft-surface); color: var(--fg-2); box-shadow: var(--soft-out-xs); }
-  .btn-glass:hover, .btn-glass-ghost:hover { box-shadow: var(--soft-out); transform: none; }
-  .btn-glass:active, .btn-glass-ghost:active { box-shadow: var(--soft-in-sm); transform: none; }
-
-  /* ---------- Nav ---------- */
-  .nav { display: flex; justify-content: space-between; gap: var(--space-4); margin-top: var(--space-8); }
-  .nav .spacer { flex: 1; }
-  .err { color: var(--danger); font-size: var(--text-sm); margin-top: var(--space-4); display: none; }
-  .err.on { display: block; }
-
-  /* ---------- Result ---------- */
-  .result-hero { text-align: center; padding: var(--space-6) 0 var(--space-8); }
-  .result-lvl {
-    font-family: var(--font-display); font-weight: var(--weight-light); font-size: var(--text-5xl);
-    background: var(--grad-balance); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1;
-  }
-  .result-name { font-family: var(--font-display); font-size: var(--text-xl); color: var(--fg-1); margin-top: var(--space-3); letter-spacing: var(--tracking-wide); }
-  .metric { margin: var(--space-6) 0; }
-  .metric-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--space-3); }
-  .metric-name { font-size: var(--text-sm); color: var(--fg-1); }
-  .metric-val { font-family: var(--font-mono); font-size: var(--text-md); color: var(--cyan-bright); }
-  .metric-track { height: 12px; border-radius: var(--radius-pill); box-shadow: var(--soft-in-sm); padding: 3px; }
-  .metric-fill { height: 100%; background: var(--grad-balance); border-radius: var(--radius-pill); transition: width var(--dur-slow) var(--ease-out); }
-  .metric-note { font-size: var(--text-xs); color: var(--fg-4); margin-top: var(--space-3); line-height: var(--leading-relaxed); }
-  .gap-row {
-    display: grid; grid-template-columns: 1fr 56px; gap: var(--space-3); align-items: center;
-    padding: var(--space-4) var(--space-5); margin-bottom: var(--space-3); font-size: var(--text-sm);
-    border-radius: var(--radius-md); box-shadow: var(--soft-out-xs); background: var(--soft-surface);
-  }
-  .gap-val { font-family: var(--font-mono); text-align: right; color: var(--warning); }
-
-  hr.rule { border: 0; border-top: 1px solid rgba(255,242,224,0.05); margin: var(--space-8) 0; }
-  .hidden { display: none !important; }
-  @media (max-width: 560px) {
-    .card { padding: var(--space-5); }
-    .pair-row { grid-template-columns: 1fr; gap: var(--space-1); }
-    .facts { gap: var(--space-3); }
-    .fact { min-width: 88px; padding: var(--space-3) var(--space-4); }
-  }
+@media (prefers-reduced-motion:reduce){*{transition-duration:.001ms!important}}
 </style>
 </head>
 <body>
@@ -667,10 +259,13 @@ code, kbd, samp { font-family: var(--font-mono); }
   <!-- ============ INTRO ============ -->
   <section id="intro">
     <div class="hero">
+      <div class="hero-copy">
+        <div class="brand">AInoia · Дослідження</div>
+        <h1>Індекс <em>ШІ-зрілості</em><br>організаційної культури</h1>
+        <p class="lede">Інструменти доступні всім. Системно ними користуються одиниці. Різницю робить не технологія, а культура — і її можна виміряти.</p>
+        <p class="antithesis">Не про інструменти. Про готовність.</p>
+      </div>
       <div class="hero-art"><div class="hero-art-inner"><img src="assets/plato-hero.png" alt="" loading="eager" decoding="async"></div></div>
-      <h1>Індекс <em>ШІ-зрілості</em><br>організаційної культури</h1>
-      <p class="lede">Інструменти доступні всім. Системно ними користуються одиниці. Різницю робить не технологія, а культура — і її можна виміряти.</p>
-      <p class="antithesis">Не про інструменти. Про готовність.</p>
       <div class="facts">
         <div class="fact"><b>51</b><span>питання</span></div>
         <div class="fact"><b>15</b><span>хвилин</span></div>
