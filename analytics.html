@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="theme-color" content="#f6f4ef">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Аналітика зрілості (Metabase) — Індекс ШІ-зрілості</title>
+<meta name="description" content="Аналітичний дашборд результатів дослідження індексу ШІ-зрілості організаційної культури на базі Metabase BI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --surface-page: #f6f4ef;
+  --surface: #fbfaf7;
+  --surface-raised: #ffffff;
+  --surface-secondary: #eeebe3;
+  --surface-tertiary: #e5e0d6;
+  --surface-sunken: #e9e5dc;
+  --hairline: #e5e0d6;
+  --marble-300: #d8d1c2;
+
+  /* Ink / Foreground */
+  --foreground: #211e18;
+  --ink: #211e18;
+  --muted: #6e6557;
+  --faint: #887d6d;
+  --ghost: #b5ac9e;
+
+  /* Accents */
+  --tan: #c0a080;
+  --tan-bright: #d6bd9c;
+  --tan-deep: #a67c52;
+  --bronze: #8d6e4c;
+  --clay: #b3906f;
+  --grad-cta: linear-gradient(135deg, #d6bd9c 0%, #a67c52 100%);
+  --grad-cta-hover: linear-gradient(135deg, #dfc9ab 0%, #b28659 100%);
+  --fg-on-accent: #241a10;
+
+  --accent: #a67c52;
+  --accent-text: #7a5c3c;
+  --accent-tint: rgba(166, 124, 82, 0.08);
+  --accent-tint-strong: rgba(166, 124, 82, 0.15);
+  --accent-border: rgba(166, 124, 82, 0.32);
+
+  /* Status */
+  --success: #5f7a42;
+  --success-tint: rgba(95, 122, 66, 0.12);
+  --success-border: rgba(95, 122, 66, 0.36);
+  --warning: #9e6f24;
+  --warning-tint: rgba(158, 111, 36, 0.12);
+  --warning-border: rgba(158, 111, 36, 0.36);
+  --danger: #a23c2e;
+  --danger-tint: #fbebe8;
+  --danger-border: rgba(162, 60, 46, 0.36);
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(33, 30, 24, 0.06);
+  --border: #e4dfd5;
+  --border-strong: rgba(33, 30, 24, 0.18);
+  --separator: #e7e2d8;
+  --focus-ring: rgba(166, 124, 82, 0.38);
+
+  /* Geometry & Shadows */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(33, 30, 24, 0.04), 0 1px 1px rgba(33, 30, 24, 0.02);
+  --shadow-md: 0 4px 12px -2px rgba(33, 30, 24, 0.06), 0 2px 4px -1px rgba(33, 30, 24, 0.03);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--surface-page);
+  color: var(--foreground);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(214, 189, 156, 0.18) 0%, transparent 40%),
+    radial-gradient(circle at 85% 25%, rgba(166, 124, 82, 0.10) 0%, transparent 45%);
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(251, 250, 247, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-text);
+  background: var(--accent-tint);
+  border: 1px solid var(--accent-border);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+.nav-title {
+  font-family: 'Jost', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--foreground);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--border);
+}
+.btn-ghost:hover {
+  background: var(--surface-raised);
+  color: var(--foreground);
+}
+
+.btn-accent {
+  background: var(--accent-tint);
+  color: var(--accent-text);
+  border-color: var(--accent-border);
+}
+.btn-accent:hover {
+  background: var(--accent-tint-strong);
+}
+
+.btn-primary {
+  background: var(--grad-cta);
+  color: var(--fg-on-accent);
+  border: none;
+  font-weight: 600;
+}
+.btn-primary:hover {
+  opacity: 0.95;
+}
+
+.main-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Налаштування джерела */
+.source-bar {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.source-inputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 300px;
+}
+
+.source-input {
+  flex: 1;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-page);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--foreground);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.source-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.source-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.status-dot.active {
+  background: var(--success);
+  box-shadow: 0 0 0 2px var(--success-tint);
+}
+
+/* Інформаційні картки показників */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.kpi-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.kpi-value {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 24px;
+  color: var(--foreground);
+}
+
+.kpi-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+/* Контейнер фрейму */
+.iframe-wrapper {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  position: relative;
+  min-height: 850px;
+  display: flex;
+  flex-direction: column;
+}
+
+.iframe-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.iframe-container {
+  flex: 1;
+  position: relative;
+  min-height: 800px;
+}
+
+iframe.metabase-frame {
+  width: 100%;
+  height: 100%;
+  min-height: 800px;
+  border: none;
+  display: block;
+}
+
+/* Екран-заглушка / інструкція якщо дашборд ще не підключено */
+.fallback-card {
+  padding: 40px 24px;
+  text-align: center;
+  max-width: 680px;
+  margin: 40px auto;
+  background: var(--surface);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-xl);
+}
+
+.fallback-title {
+  font-family: 'Jost', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.fallback-text {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.steps-list {
+  text-align: left;
+  margin: 0 auto 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.step-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 13px;
+  background: var(--surface-raised);
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--accent-text);
+  background: var(--accent-tint);
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.step-content code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: var(--surface-sunken);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+/* Завантажувач */
+.loader-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--surface-raised);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  z-index: 10;
+  transition: opacity 0.3s ease;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--surface-secondary);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .source-bar { flex-direction: column; align-items: stretch; }
+  .source-inputs { min-width: 100%; }
+  .nav-title { font-size: 15px; }
+  .btn span.desktop-only { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+
+<!-- Шапка -->
+<header class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <span class="brand-badge">AInoia · Дослідження</span>
+      <h1 class="nav-title">Аналітика зрілості (Metabase BI)</h1>
+    </div>
+
+    <div class="nav-actions">
+      <a href="index.html" class="btn btn-ghost" title="Повернутися до заповнення анкети">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <span>Анкета</span>
+      </a>
+
+      <a href="http://localhost:3030" target="_blank" rel="noopener" class="btn btn-accent" title="Відкрити інтерфейс Metabase">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span class="desktop-only">Metabase (localhost:3030)</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+  <!-- Панель керування джерелом -->
+  <div class="source-bar">
+    <div class="source-inputs">
+      <label for="embedUrlInput" class="source-status">
+        <span class="status-dot" id="statusDot"></span>
+        <span style="font-weight: 500;">Джерело:</span>
+      </label>
+      <input
+        type="url"
+        id="embedUrlInput"
+        class="source-input"
+        placeholder="Вставте Public Embed URL дашборду (наприклад: http://localhost:3030/public/dashboard/...)"
+      />
+      <button type="button" id="saveUrlBtn" class="btn btn-primary">Зберегти</button>
+      <button type="button" id="resetUrlBtn" class="btn btn-ghost" title="Скинути до стандартного">Скинути</button>
+    </div>
+
+    <div class="source-status">
+      <span>База: <strong>Neon (survey)</strong></span>
+      <span>·</span>
+      <span>Схема: <strong>public</strong></span>
+    </div>
+  </div>
+
+  <!-- Швидкі картки ключових показників моделі -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <span class="kpi-label">Психологічна безпека</span>
+      <div class="kpi-value">v_company_summary</div>
+      <p class="kpi-desc">Шкала Едмондсон (ps1–ps7): безпека експериментування та визнання помилок при роботі з ШІ.</p>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-label">Лідерство та правила</span>
+      <div class="kpi-value">gv1 – gv8</div>
+      <p class="kpi-desc">Наявність політик безпеки, чітких регламентів, стимулів та підтримки керівництва.</p>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-label">Розрив узгодженості</span>
+      <div class="kpi-value">v_perception_gap</div>
+      <p class="kpi-desc">Різниця оцінки стану між лідерами (C-level) та командами (поріг ≥ 2 керівників, ≥ 3 виконавців).</p>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-label">Розриви по процесах</span>
+      <div class="kpi-value">v_process_gaps</div>
+      <p class="kpi-desc">Різниця між поточним використанням («зараз») та очікуваною потребою («потрібно»).</p>
+    </div>
+  </div>
+
+  <!-- Область дашборду Metabase -->
+  <div class="iframe-wrapper">
+    <div class="iframe-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);"></span>
+        <span>Інтерактивний дашборд Metabase</span>
+      </div>
+      <div>
+        <button type="button" id="reloadFrameBtn" class="btn btn-ghost" style="padding: 3px 8px; font-size: 11px;">
+          🔄 Перезавантажити фрейм
+        </button>
+      </div>
+    </div>
+
+    <div class="iframe-container" id="frameContainer">
+      <!-- Лоадер -->
+      <div class="loader-overlay" id="loaderOverlay">
+        <div class="spinner"></div>
+        <p style="font-size: 13px; color: var(--muted);">Завантаження даних із Metabase...</p>
+      </div>
+
+      <!-- Iframe -->
+      <iframe
+        id="metabaseFrame"
+        class="metabase-frame"
+        src=""
+        allowtransparency
+        loading="lazy"
+      ></iframe>
+
+      <!-- Інструкція / фолбек якщо дашборд ще не налаштовано -->
+      <div class="fallback-card" id="fallbackCard" style="display: none;">
+        <h2 class="fallback-title">Дашборд Metabase очікує підключення</h2>
+        <p class="fallback-text">
+          Для відображення зведеної аналітики запустіть локальний Metabase та вставте посилання на публічний дашборд у поле вище.
+        </p>
+
+        <div class="steps-list">
+          <div class="step-item">
+            <span class="step-num">1</span>
+            <div class="step-content">
+              <strong>Запустіть контейнер Metabase:</strong><br>
+              <code>cd deploy && docker compose -f docker-compose.metabase.yml up -d</code>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <span class="step-num">2</span>
+            <div class="step-content">
+              <strong>Підключіть базу Neon:</strong><br>
+              Відкрийте <a href="http://localhost:3030" target="_blank" style="color: var(--accent-text); font-weight: 500;">http://localhost:3030</a>, оберіть PostgreSQL, базу <code>survey</code>.
+            </div>
+          </div>
+
+          <div class="step-item">
+            <span class="step-num">3</span>
+            <div class="step-content">
+              <strong>Отримайте посилання вбудовування:</strong><br>
+              У дашборді натисніть <em>Sharing & Embedding → Public link</em> та скопіюйте посилання.
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="document.getElementById('embedUrlInput').focus()">
+          Вставити посилання на дашборд
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function() {
+  const STORAGE_KEY = "ai_maturity_metabase_embed_url";
+  const DEFAULT_PLACEHOLDER_URL = "";
+
+  const input = document.getElementById("embedUrlInput");
+  const saveBtn = document.getElementById("saveUrlBtn");
+  const resetBtn = document.getElementById("resetUrlBtn");
+  const reloadBtn = document.getElementById("reloadFrameBtn");
+  const iframe = document.getElementById("metabaseFrame");
+  const loader = document.getElementById("loaderOverlay");
+  const fallback = document.getElementById("fallbackCard");
+  const statusDot = document.getElementById("statusDot");
+
+  function getEmbedUrl() {
+    return localStorage.getItem(STORAGE_KEY) || DEFAULT_PLACEHOLDER_URL;
+  }
+
+  function setEmbedUrl(url) {
+    const clean = url.trim();
+    if (clean) {
+      localStorage.setItem(STORAGE_KEY, clean);
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+    render();
+  }
+
+  function render() {
+    const currentUrl = getEmbedUrl();
+    input.value = currentUrl;
+
+    if (!currentUrl) {
+      iframe.style.display = "none";
+      loader.style.display = "none";
+      fallback.style.display = "block";
+      statusDot.classList.remove("active");
+      return;
+    }
+
+    fallback.style.display = "none";
+    iframe.style.display = "block";
+    loader.style.display = "flex";
+    statusDot.classList.add("active");
+
+    // Додаємо параметри для акуратного безрамкового вбудовування, якщо їх ще немає
+    let targetSrc = currentUrl;
+    if (!targetSrc.includes("#")) {
+      targetSrc += "#bordered=false&titled=false";
+    }
+
+    iframe.src = targetSrc;
+  }
+
+  iframe.addEventListener("load", function() {
+    loader.style.display = "none";
+  });
+
+  saveBtn.addEventListener("click", function() {
+    setEmbedUrl(input.value);
+  });
+
+  input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      setEmbedUrl(input.value);
+    }
+  });
+
+  resetBtn.addEventListener("click", function() {
+    if (confirm("Скинути збережене посилання на дашборд?")) {
+      setEmbedUrl("");
+    }
+  });
+
+  reloadBtn.addEventListener("click", function() {
+    if (iframe.src) {
+      loader.style.display = "flex";
+      iframe.src = iframe.src;
+    }
+  });
+
+  // Ініціалізація
+  render();
+})();
+</script>
+</body>
+</html>

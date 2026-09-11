@@ -1,0 +1,25 @@
+# =============================================================================
+# Metabase BI для анкети ШІ-зрілості
+# Запуск: docker compose -f deploy/docker-compose.metabase.yml up -d
+# Зупинка: docker compose -f deploy/docker-compose.metabase.yml down
+# Дашборд: http://localhost:3030
+# =============================================================================
+
+name: ai-maturity-metabase
+
+services:
+  metabase:
+    image: metabase/metabase:latest
+    container_name: ai-maturity-metabase
+    restart: unless-stopped
+    ports:
+      - "3030:3000"
+    volumes:
+      - metabase_data:/metabase-data
+    environment:
+      MB_DB_FILE: /metabase-data/metabase.db
+      MB_JETTY_HOST: 0.0.0.0
+      MB_JETTY_PORT: 3000
+
+volumes:
+  metabase_data:
