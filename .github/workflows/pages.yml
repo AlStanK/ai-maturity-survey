@@ -1,5 +1,5 @@
-# Публікація анкети на GitHub Pages.
-# У Pages потрапляє лише статична сторінка (index.html + assets/) —
+# Публікація анкети та сторінки аналітики на GitHub Pages.
+# У Pages потрапляє лише статика (index.html, analytics.html + assets/) —
 # схема БД, деплой-конфіги й Apps Script лишаються тільки в репо.
 name: Pages
 
@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - index.html
+      - analytics.html
       - assets/**
       - .github/workflows/pages.yml
   workflow_dispatch:
@@ -34,6 +35,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html _site/
+          if [ -f analytics.html ]; then cp analytics.html _site/; fi
           if [ -d assets ]; then cp -R assets _site/; fi
 
       - uses: actions/configure-pages@v5
