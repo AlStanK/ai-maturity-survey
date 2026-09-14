@@ -695,7 +695,10 @@ hr.rule { border: 0; border-top: 1px solid var(--separator); margin: 28px 0; }
     </div>
     <div class="hero">
       <div class="hero-copy">
-        <div class="brand">AInoia · Дослідження</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="brand">AInoia · Дослідження</div>
+          <a href="analytics.html" class="brand" style="text-decoration:none;">Дашборд результатів →</a>
+        </div>
         <h1>Індекс <em>ШІ-зрілості</em><br>організаційної культури</h1>
         <p class="lede">Інструменти доступні всім. Системно ними користуються одиниці. Різницю робить не технологія, а культура — і її можна виміряти.</p>
         <p class="antithesis">Не про інструменти. Про готовність.</p>
@@ -1418,7 +1421,7 @@ function showResult() {
   if (skip) {
     h = `<div class="card"><h2>Дякуємо</h2><p class="sub">Ваші відповіді збережено. Вони будуть використані лише в агрегованому вигляді.</p>
       <div class="metric-note" id="sendStatus"></div>
-      <div class="nav"><div class="spacer"></div><button class="btn-glass-ghost" id="dl">Завантажити мої відповіді</button></div></div>
+      <div class="nav"><a href="analytics.html" class="btn-glass" style="text-decoration:none; margin-right:10px;">Зведений дашборд результатів →</a><div class="spacer"></div><button class="btn-glass-ghost" id="dl">Завантажити мої відповіді</button></div></div>
       ${inviteCardHtml()}`;
   } else {
     const m = MATURITY[r.matNow - 1] || ["—", ""];
@@ -1468,7 +1471,8 @@ function inviteCardHtml() {
   if (!isCoordinator()) {
     return `<div class="card"><h3>Що далі</h3>
       <p class="sub" style="margin:0">Індекс організації складеться з відповідей усіх колег за кодом
-      <span class="code">${esc(ORG.code)}</span>. Його отримає координатор, коли анкету заповнять щонайменше 5 осіб.</p></div>`;
+      <span class="code">${esc(ORG.code)}</span>. Його отримає координатор, коли анкету заповнять щонайменше 5 осіб.</p>
+      <div style="margin-top:14px"><a href="analytics.html?org=${encodeURIComponent(ORG.code)}" class="link-btn">Перевірити статус відповідей за цим кодом →</a></div></div>`;
   }
   return `<div class="card"><h3>Запросіть колег</h3>
     <p class="sub">Індекс організації рахується, коли анкету заповнять щонайменше 5 осіб. Посилання для колег містить код
@@ -1477,7 +1481,11 @@ function inviteCardHtml() {
       <input type="text" id="inviterName" value="${esc(ORG.name)}" autocomplete="name"></div>
     <label class="field-label" for="invite">Посилання для колег</label>
     <div class="invite"><input type="text" id="invite" value="${esc(inviteLink())}" readonly>
-      <button class="btn-glass-ghost" id="copy">Скопіювати</button></div></div>`;
+      <button class="btn-glass-ghost" id="copy">Скопіювати</button></div>
+    <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--separator); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <span class="tiny">Відстежуйте прогрес заповнення анкет онлайн:</span>
+      <a href="analytics.html?org=${encodeURIComponent(ORG.code)}" class="link-btn" style="font-size:13px;">Перевірити кількість відповідей (${esc(ORG.code)}) →</a>
+    </div></div>`;
 }
 
 function bindInvite() {
