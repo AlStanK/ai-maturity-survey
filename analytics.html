@@ -4,12 +4,16 @@
 <meta charset="utf-8">
 <meta name="theme-color" content="#f6f4ef">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Аналітика зрілості (Metabase) — Індекс ШІ-зрілості</title>
-<meta name="description" content="Аналітичний дашборд результатів дослідження індексу ШІ-зрілості організаційної культури на базі Metabase BI.">
+<title>Дашборд результатів — Індекс ШІ-зрілості</title>
+<meta name="description" content="Зведена аналітика та інтерактивний дашборд оцінки культурної готовності організації до системного використання штучного інтелекту.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
+/* ==========================================================================
+   Індекс ШІ-зрілості · HeroUI v3 Design System & Dashboard Tokens
+   ========================================================================== */
 :root {
   color-scheme: light;
 
@@ -64,618 +68,1522 @@
   --separator: #e7e2d8;
   --focus-ring: rgba(166, 124, 82, 0.38);
 
-  /* Geometry & Shadows */
+  /* HeroUI v3 Geometry & Shadows */
+  --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 18px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px rgba(33, 30, 24, 0.04), 0 1px 1px rgba(33, 30, 24, 0.02);
-  --shadow-md: 0 4px 12px -2px rgba(33, 30, 24, 0.06), 0 2px 4px -1px rgba(33, 30, 24, 0.03);
+  --radius: 10px;
+  --field-radius: 12px;
+  --card-radius: 20px;
+
+  --shadow-xs: 0 1px 2px rgba(33, 30, 24, 0.04);
+  --shadow-sm: 0 1px 3px rgba(33, 30, 24, 0.05), 0 1px 2px rgba(33, 30, 24, 0.03);
+  --shadow-card: 0 4px 16px -2px rgba(33, 30, 24, 0.04), 0 1px 4px -1px rgba(33, 30, 24, 0.05);
+  --shadow-btn: 0 2px 6px 0 rgba(166, 124, 82, 0.22);
+  --shadow-btn-hover: 0 4px 12px 0 rgba(166, 124, 82, 0.32);
+
+  /* Typography */
+  --font-sans: "Inter", "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Jost", "Century Gothic", sans-serif;
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --maxw: 1140px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body { margin: 0; padding: 0; }
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--surface-page);
+  background: var(--surface-page);
   color: var(--foreground);
-  line-height: 1.5;
+  font: 400 15px/1.6 var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv11", "ss01";
 }
+::selection { background: rgba(192, 160, 128, 0.28); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
-.bg {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    radial-gradient(circle at 15% 10%, rgba(214, 189, 156, 0.18) 0%, transparent 40%),
-    radial-gradient(circle at 85% 25%, rgba(166, 124, 82, 0.10) 0%, transparent 45%);
-}
-
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: rgba(251, 250, 247, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 20px;
-}
-
-.nav-container {
-  max-width: 1400px;
+.wrap {
+  max-width: var(--maxw);
   margin: 0 auto;
+  padding: 28px 24px 100px;
+}
+
+/* Header & Context Bar */
+.top-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--separator);
+  margin-bottom: 24px;
 }
-
-.nav-brand {
+.brand-group {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-
-.brand-badge {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--accent-text);
   background: var(--accent-tint);
   border: 1px solid var(--accent-border);
-  padding: 3px 8px;
+  padding: 5px 14px;
   border-radius: var(--radius-full);
 }
-
-.nav-title {
-  font-family: 'Jost', sans-serif;
-  font-weight: 600;
-  font-size: 17px;
-  color: var(--foreground);
+.brand::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-tint-strong);
 }
-
+.page-title {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+}
 .nav-actions {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: var(--radius-md);
-  font-size: 13px;
-  font-weight: 500;
+  gap: 8px;
+  height: 38px;
+  padding: 0 16px;
+  font: 600 13.5px/1 var(--font-sans);
+  border-radius: var(--field-radius);
   cursor: pointer;
-  text-decoration: none;
-  transition: all 0.15s ease;
   border: 1px solid transparent;
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  user-select: none;
+  white-space: nowrap;
 }
-
-.btn-ghost {
-  background: transparent;
-  color: var(--muted);
-  border-color: var(--border);
-}
-.btn-ghost:hover {
-  background: var(--surface-raised);
-  color: var(--foreground);
-}
-
-.btn-accent {
-  background: var(--accent-tint);
-  color: var(--accent-text);
-  border-color: var(--accent-border);
-}
-.btn-accent:hover {
-  background: var(--accent-tint-strong);
-}
-
 .btn-primary {
   background: var(--grad-cta);
   color: var(--fg-on-accent);
-  border: none;
-  font-weight: 600;
+  box-shadow: var(--shadow-btn);
 }
 .btn-primary:hover {
-  opacity: 0.95;
+  background: var(--grad-cta-hover);
+  box-shadow: var(--shadow-btn-hover);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  background: var(--surface);
+  color: var(--foreground);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-xs);
+}
+.btn-ghost:hover {
+  background: var(--surface-secondary);
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+.btn-sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 12.5px;
 }
 
-.main-content {
-  position: relative;
-  z-index: 1;
-  max-width: 1400px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 24px 20px 48px;
-  flex: 1;
+/* Selector Tabs & Lookup Bar */
+.context-selector {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* Налаштування джерела */
-.source-bar {
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 14px 18px;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
 }
-
-.source-inputs {
+.org-info {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 300px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.org-badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--foreground);
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--success);
+  background: var(--success-tint);
+  border: 1px solid var(--success-border);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+.status-pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+.tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--surface-sunken);
+  padding: 4px;
+  border-radius: var(--field-radius);
+}
+.tab-btn {
+  background: transparent;
+  border: 0;
+  padding: 6px 14px;
+  font: 500 13px/1.4 var(--font-sans);
+  color: var(--muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tab-btn:hover { color: var(--foreground); }
+.tab-btn.active {
+  background: var(--surface-raised);
+  color: var(--foreground);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
 }
 
-.source-input {
-  flex: 1;
-  height: 38px;
-  padding: 0 12px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-strong);
-  background: var(--surface-page);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  color: var(--foreground);
-  outline: none;
-  transition: border-color 0.15s ease;
+/* Lookup Box */
+.lookup-card {
+  background: linear-gradient(145deg, #ffffff 0%, var(--surface-secondary) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 16px 22px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
 }
-.source-input:focus {
+.lookup-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.lookup-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: 1;
+  max-width: 440px;
+}
+.lookup-input-group input {
+  height: 38px;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--field-radius);
+  padding: 0 14px;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--foreground);
+}
+.lookup-input-group input:focus {
+  outline: 0;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--focus-ring);
 }
-
-.source-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--muted);
+.lookup-result {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--separator);
+  display: none;
+}
+.progress-track-lg {
+  height: 10px;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin: 10px 0;
+}
+.progress-fill-lg {
+  height: 100%;
+  background: var(--grad-cta);
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease;
 }
 
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--muted);
-}
-.status-dot.active {
-  background: var(--success);
-  box-shadow: 0 0 0 2px var(--success-tint);
-}
-
-/* Інформаційні картки показників */
-.kpi-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 14px;
-}
-
-.kpi-card {
-  background: var(--surface-raised);
+/* Cards (HeroUI v3) */
+.card {
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px 18px;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  border-radius: var(--card-radius);
+  padding: 26px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+  transition: border-color 0.2s ease;
 }
-
-.kpi-label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-}
-
-.kpi-value {
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-size: 24px;
+.card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
   color: var(--foreground);
 }
-
-.kpi-desc {
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.4;
-  margin-top: 2px;
-}
-
-/* Контейнер фрейму */
-.iframe-wrapper {
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  position: relative;
-  min-height: 850px;
-  display: flex;
-  flex-direction: column;
-}
-
-.iframe-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 18px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.iframe-container {
-  flex: 1;
-  position: relative;
-  min-height: 800px;
-}
-
-iframe.metabase-frame {
-  width: 100%;
-  height: 100%;
-  min-height: 800px;
-  border: none;
-  display: block;
-}
-
-/* Екран-заглушка / інструкція якщо дашборд ще не підключено */
-.fallback-card {
-  padding: 40px 24px;
-  text-align: center;
-  max-width: 680px;
-  margin: 40px auto;
-  background: var(--surface);
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius-xl);
-}
-
-.fallback-title {
-  font-family: 'Jost', sans-serif;
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.fallback-text {
+.card-desc {
   font-size: 14px;
   color: var(--muted);
-  margin-bottom: 24px;
-  line-height: 1.6;
+  margin: 0 0 20px;
+  line-height: 1.5;
 }
 
-.steps-list {
-  text-align: left;
-  margin: 0 auto 28px;
+/* Hero KPI Grid */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 2fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.maturity-hero-card {
+  background: linear-gradient(145deg, #ffffff 0%, var(--surface) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 30px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.maturity-num {
+  font-family: var(--font-sans);
+  font-size: clamp(56px, 8vw, 84px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin: 8px 0;
+  background: linear-gradient(135deg, var(--tan-deep) 0%, var(--bronze) 60%, #735a3a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+.maturity-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--foreground);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.maturity-target-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-tint);
+  border: 1px solid var(--accent-border);
+  color: var(--accent-text);
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  margin-top: 10px;
+}
+
+/* 3 Core Indices Grid */
+.indices-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.index-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 22px 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.index-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--marble-300);
+}
+.index-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.index-label {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--foreground);
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+.index-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--accent-tint);
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--accent-border);
+}
+.index-val {
+  font-family: var(--font-mono);
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--foreground);
+  margin: 6px 0 10px;
+  font-variant-numeric: tabular-nums;
+}
+.index-val span {
+  font-size: 17px;
+  color: var(--faint);
+  font-weight: 500;
+}
+.progress-bar-thin {
+  height: 6px;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--grad-cta);
+  border-radius: var(--radius-full);
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.index-note {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Secondary 4 Metrics Row */
+.secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.sec-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--field-radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+}
+.sec-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.sec-val {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+.sec-sub {
+  font-size: 12px;
+  color: var(--faint);
+  line-height: 1.35;
+}
+
+/* Charts Grid */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 330px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Maturity Levels 1-4 Matrix */
+.levels-matrix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+.lvl-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--field-radius);
+  padding: 16px;
+  position: relative;
+  transition: all 0.15s ease;
+}
+.lvl-card.active-now {
+  border-color: var(--accent);
+  background: var(--accent-tint);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.lvl-card.active-target {
+  border-color: var(--warning);
+  background: var(--warning-tint);
+  border-style: dashed;
+}
+.lvl-num-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-secondary);
+  color: var(--muted);
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.lvl-card.active-now .lvl-num-badge {
+  background: var(--accent);
+  color: var(--fg-on-accent);
+}
+.lvl-card.active-target .lvl-num-badge {
+  background: var(--warning);
+  color: #ffffff;
+}
+.lvl-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 4px;
+}
+.lvl-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/* Process Gaps Table & Cards */
+.process-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-
-.step-item {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  font-size: 13px;
+.proc-row {
+  display: grid;
+  grid-template-columns: 2.2fr 1.6fr 1.6fr 100px;
+  align-items: center;
+  gap: 16px;
   background: var(--surface-raised);
-  padding: 12px 14px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--field-radius);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-xs);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.proc-row:hover {
+  transform: translateY(-1px);
+  border-color: var(--marble-300);
+}
+.proc-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--foreground);
+  letter-spacing: -0.01em;
+}
+.proc-sub {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.bar-track {
+  height: 8px;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: 4px;
+}
+.bar-fill-now {
+  height: 100%;
+  background: var(--grad-cta);
+  border-radius: var(--radius-full);
+}
+.bar-fill-need {
+  height: 100%;
+  background: #c0a080;
+  border-radius: var(--radius-full);
+}
+.gap-badge {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--warning-tint);
+  border: 1px solid var(--warning-border);
+  color: var(--warning);
+  font-variant-numeric: tabular-nums;
+}
+.gap-badge.hotspot {
+  background: var(--danger-tint);
+  border-color: var(--danger-border);
+  color: var(--danger);
 }
 
-.step-num {
-  font-family: 'JetBrains Mono', monospace;
+/* Perception Gap: Leaders vs Team */
+.perception-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 20px;
+}
+.team-col-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--field-radius);
+  padding: 20px;
+}
+.team-col-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 4px;
+}
+.team-col-sub {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.metric-pair {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--separator);
+  font-size: 13.5px;
+}
+.metric-pair:last-child { border-bottom: 0; }
+.metric-pair strong {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--foreground);
+}
+.insight-box {
+  background: var(--accent-tint);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--field-radius);
+  padding: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--foreground);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.insight-box h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-text);
+  margin: 0 0 8px;
+}
+
+/* Operational Practices Grid */
+.practices-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.practice-item {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--field-radius);
+  padding: 16px;
+}
+.practice-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.practice-stat {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 4px;
+}
+.practice-desc {
+  font-size: 12px;
+  color: var(--faint);
+  line-height: 1.4;
+}
+
+/* Recommendations */
+.recomms {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 10px;
+}
+.rec-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--field-radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rec-step {
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 700;
   color: var(--accent-text);
   background: var(--accent-tint);
-  width: 22px;
-  height: 22px;
+  border: 1px solid var(--accent-border);
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.rec-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.rec-body {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid var(--separator);
+  padding-top: 30px;
+  margin-top: 50px;
+  font-size: 13.5px;
+  color: var(--muted);
   display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
   align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  flex-shrink: 0;
-  font-size: 12px;
 }
-
-.step-content code {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  background: var(--surface-sunken);
-  padding: 2px 5px;
-  border-radius: 4px;
-}
-
-/* Завантажувач */
-.loader-overlay {
-  position: absolute;
-  inset: 0;
-  background: var(--surface-raised);
+.footer-links {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  z-index: 10;
-  transition: opacity 0.3s ease;
+  gap: 16px;
+}
+.footer-links a {
+  color: var(--accent-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid var(--surface-secondary);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+/* Responsive */
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .indices-grid { grid-template-columns: 1fr; }
+  .secondary-grid { grid-template-columns: 1fr 1fr; }
+  .charts-grid { grid-template-columns: 1fr; }
+  .perception-grid { grid-template-columns: 1fr; }
+  .proc-row { grid-template-columns: 1fr; gap: 8px; }
+  .practices-grid { grid-template-columns: 1fr 1fr; }
+  .recomms { grid-template-columns: 1fr; }
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-@media (max-width: 768px) {
-  .source-bar { flex-direction: column; align-items: stretch; }
-  .source-inputs { min-width: 100%; }
-  .nav-title { font-size: 15px; }
-  .btn span.desktop-only { display: none; }
+@media print {
+  body { background: #ffffff !important; }
+  .wrap { max-width: 100% !important; padding: 0 !important; }
+  .nav-actions, .context-selector, .lookup-card, .footer-links, .tabs { display: none !important; }
+  .card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; }
 }
 </style>
 </head>
 <body>
-<div class="bg"></div>
 
-<!-- Шапка -->
-<header class="navbar">
-  <div class="nav-container">
-    <div class="nav-brand">
-      <span class="brand-badge">AInoia · Дослідження</span>
-      <h1 class="nav-title">Аналітика зрілості (Metabase BI)</h1>
+<div class="wrap">
+
+  <!-- Top Nav -->
+  <header class="top-nav">
+    <div class="brand-group">
+      <div class="brand">AInoia · Дослідження</div>
+      <div class="page-title">Індекс ШІ-зрілості організаційної культури</div>
     </div>
-
     <div class="nav-actions">
-      <a href="index.html" class="btn btn-ghost" title="Повернутися до заповнення анкети">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        <span>Анкета</span>
-      </a>
-
-      <a href="http://localhost:3030" target="_blank" rel="noopener" class="btn btn-accent" title="Відкрити інтерфейс Metabase">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        <span class="desktop-only">Metabase (localhost:3030)</span>
-      </a>
+      <a href="index.html" class="btn btn-ghost btn-sm">← До анкети</a>
+      <button type="button" class="btn btn-ghost btn-sm" id="btnPrint" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+        Друк / PDF
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" id="btnExport" onclick="exportDataJson()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Експорт JSON
+      </button>
     </div>
-  </div>
-</header>
+  </header>
 
-<main class="main-content">
-  <!-- Панель керування джерелом -->
-  <div class="source-bar">
-    <div class="source-inputs">
-      <label for="embedUrlInput" class="source-status">
-        <span class="status-dot" id="statusDot"></span>
-        <span style="font-weight: 500;">Джерело:</span>
-      </label>
-      <input
-        type="url"
-        id="embedUrlInput"
-        class="source-input"
-        placeholder="Вставте Public Embed URL дашборду (наприклад: http://localhost:3030/public/dashboard/...)"
-      />
-      <button type="button" id="saveUrlBtn" class="btn btn-primary">Зберегти</button>
-      <button type="button" id="resetUrlBtn" class="btn btn-ghost" title="Скинути до стандартного">Скинути</button>
+  <!-- Live Code Lookup Bar -->
+  <div class="lookup-card">
+    <div class="lookup-bar">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="brand" style="font-size:11px; padding:3px 10px;">Live перевірка</span>
+        <strong style="font-size:14.5px; color:var(--foreground);">Кількість відповідей за кодом організації:</strong>
+      </div>
+      <div class="lookup-input-group">
+        <input type="text" id="lookupCodeInput" placeholder="КОД ОРГАНІЗАЦІЇ (НАПР. 56K5JQCM)" maxlength="12">
+        <button type="button" class="btn btn-primary btn-sm" id="btnLookup" onclick="runCodeLookup()">Перевірити</button>
+      </div>
     </div>
-
-    <div class="source-status">
-      <span>База: <strong>Neon (survey)</strong></span>
-      <span>·</span>
-      <span>Схема: <strong>public</strong></span>
+    <div id="lookupResultBox" class="lookup-result">
+      <!-- Live feedback rendered here -->
     </div>
   </div>
 
-  <!-- Швидкі картки ключових показників моделі -->
-  <div class="kpi-row">
-    <div class="kpi-card">
-      <span class="kpi-label">Психологічна безпека</span>
-      <div class="kpi-value">v_company_summary</div>
-      <p class="kpi-desc">Шкала Едмондсон (ps1–ps7): безпека експериментування та визнання помилок при роботі з ШІ.</p>
+  <!-- Context & Switcher -->
+  <div class="context-selector">
+    <div class="org-info">
+      <strong id="orgNameLabel" style="font-size:16px;">ТОВ «СТТ» (ST&T.llc)</strong>
+      <span class="org-badge" id="orgCodeBadge">Код: 56K5JQCM</span>
+      <span class="status-pill" id="dataSyncBadge">Live Sync · 4 анкети</span>
+      <span style="font-size:13px; color:var(--muted);" id="sampleDesc">1 топ-менеджер, 2 тімліди, 1 спеціаліст</span>
     </div>
-
-    <div class="kpi-card">
-      <span class="kpi-label">Лідерство та правила</span>
-      <div class="kpi-value">gv1 – gv8</div>
-      <p class="kpi-desc">Наявність політик безпеки, чітких регламентів, стимулів та підтримки керівництва.</p>
-    </div>
-
-    <div class="kpi-card">
-      <span class="kpi-label">Розрив узгодженості</span>
-      <div class="kpi-value">v_perception_gap</div>
-      <p class="kpi-desc">Різниця оцінки стану між лідерами (C-level) та командами (поріг ≥ 2 керівників, ≥ 3 виконавців).</p>
-    </div>
-
-    <div class="kpi-card">
-      <span class="kpi-label">Розриви по процесах</span>
-      <div class="kpi-value">v_process_gaps</div>
-      <p class="kpi-desc">Різниця між поточним використанням («зараз») та очікуваною потребою («потрібно»).</p>
+    <div class="tabs">
+      <button type="button" class="tab-btn active" id="tabOrg" onclick="switchView('org')">ST&T (56K5JQCM)</button>
+      <button type="button" class="tab-btn" id="tabBench" onclick="switchView('bench')">Галузевий бенчмарк</button>
     </div>
   </div>
 
-  <!-- Область дашборду Metabase -->
-  <div class="iframe-wrapper">
-    <div class="iframe-header">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);"></span>
-        <span>Інтерактивний дашборд Metabase</span>
+  <!-- Hero Grid: Maturity + 3 Core Indices -->
+  <div class="hero-grid">
+    <!-- Maturity Card -->
+    <div class="maturity-hero-card">
+      <div>
+        <span class="brand" style="font-size:11px; padding:3px 10px; margin-bottom:12px;">Рівень зрілості</span>
+        <div class="maturity-num" id="matLevelNum">2.0</div>
+        <div class="maturity-title" id="matLevelName">Локальний / Осередки</div>
+        <p style="font-size:13.5px; color:var(--muted); line-height:1.55; margin:0;" id="matLevelDesc">
+          Ентузіасти активно використовують інструменти за власною ініціативою. Відсутні системні корпоративні політики, централізоване навчання та офіційні акаунти.
+        </p>
       </div>
       <div>
-        <button type="button" id="reloadFrameBtn" class="btn btn-ghost" style="padding: 3px 8px; font-size: 11px;">
-          🔄 Перезавантажити фрейм
-        </button>
+        <div class="maturity-target-badge" id="matTargetBadge">
+          <span>Цільовий орієнтир: <strong>Рівень 3 (Системний)</strong></span>
+          <span>·</span>
+          <span>Розрив: <strong>+1.0 рівень</strong></span>
+        </div>
       </div>
     </div>
 
-    <div class="iframe-container" id="frameContainer">
-      <!-- Лоадер -->
-      <div class="loader-overlay" id="loaderOverlay">
-        <div class="spinner"></div>
-        <p style="font-size: 13px; color: var(--muted);">Завантаження даних із Metabase...</p>
+    <!-- 3 Core Indices -->
+    <div class="indices-grid">
+      <!-- PS Index -->
+      <div class="index-card">
+        <div>
+          <div class="index-header">
+            <span class="index-label">Психологічна безпека</span>
+            <span class="index-tag">PS Index</span>
+          </div>
+          <div class="index-val" id="psVal">4.61 <span>/ 5.0</span></div>
+          <div class="progress-bar-thin"><div class="progress-bar-fill" id="psBar" style="width: 92%;"></div></div>
+        </div>
+        <p class="index-note" id="psNote">
+          Висока відкритість. Співробітники вільно тестують ШІ; помилки сприймаються як досвід, а не привід для покарання.
+        </p>
       </div>
 
-      <!-- Iframe -->
-      <iframe
-        id="metabaseFrame"
-        class="metabase-frame"
-        src=""
-        allowtransparency
-        loading="lazy"
-      ></iframe>
-
-      <!-- Інструкція / фолбек якщо дашборд ще не налаштовано -->
-      <div class="fallback-card" id="fallbackCard" style="display: none;">
-        <h2 class="fallback-title">Дашборд Metabase очікує підключення</h2>
-        <p class="fallback-text">
-          Для відображення зведеної аналітики запустіть локальний Metabase та вставте посилання на публічний дашборд у поле вище.
-        </p>
-
-        <div class="steps-list">
-          <div class="step-item">
-            <span class="step-num">1</span>
-            <div class="step-content">
-              <strong>Запустіть контейнер Metabase:</strong><br>
-              <code>cd deploy && docker compose -f docker-compose.metabase.yml up -d</code>
-            </div>
+      <!-- GV Index -->
+      <div class="index-card">
+        <div>
+          <div class="index-header">
+            <span class="index-label">Лідерство та правила</span>
+            <span class="index-tag">GV Index</span>
           </div>
-
-          <div class="step-item">
-            <span class="step-num">2</span>
-            <div class="step-content">
-              <strong>Підключіть базу Neon:</strong><br>
-              Відкрийте <a href="http://localhost:3030" target="_blank" style="color: var(--accent-text); font-weight: 500;">http://localhost:3030</a>, оберіть PostgreSQL, базу <code>survey</code>.
-            </div>
-          </div>
-
-          <div class="step-item">
-            <span class="step-num">3</span>
-            <div class="step-content">
-              <strong>Отримайте посилання вбудовування:</strong><br>
-              У дашборді натисніть <em>Sharing & Embedding → Public link</em> та скопіюйте посилання.
-            </div>
-          </div>
+          <div class="index-val" id="gvVal">3.74 <span>/ 5.0</span></div>
+          <div class="progress-bar-thin"><div class="progress-bar-fill" id="gvBar" style="width: 75%;"></div></div>
         </div>
+        <p class="index-note" id="gvNote">
+          Керівники демонструють приклад, проте 75% практики — це «тіньовий ШІ» через брак офіційних корпоративних політик.
+        </p>
+      </div>
 
-        <button type="button" class="btn btn-primary" onclick="document.getElementById('embedUrlInput').focus()">
-          Вставити посилання на дашборд
-        </button>
+      <!-- EF Index -->
+      <div class="index-card">
+        <div>
+          <div class="index-header">
+            <span class="index-label">Сприйнята ефективність</span>
+            <span class="index-tag">EF Index</span>
+          </div>
+          <div class="index-val" id="efVal">4.08 <span>/ 5.0</span></div>
+          <div class="progress-bar-thin"><div class="progress-bar-fill" id="efBar" style="width: 82%;"></div></div>
+        </div>
+        <p class="index-note" id="efNote">
+          ШІ дає відчутний виграш часу (до >10 год/тижд) та суттєво прискорює аналітику й рутинні завдання.
+        </p>
       </div>
     </div>
   </div>
-</main>
+
+  <!-- Secondary Metrics Row -->
+  <div class="secondary-grid">
+    <div class="sec-card">
+      <div class="sec-title">Індекс узгодженості (Alignment)</div>
+      <div class="sec-val" id="alignVal">90%</div>
+      <div class="sec-sub" id="alignSub">Розрив лідери vs команда: Δ = -0.42</div>
+    </div>
+    <div class="sec-card">
+      <div class="sec-title">Масштаб «Тіньового ШІ»</div>
+      <div class="sec-val" style="color:var(--warning);" id="shadowVal">75%</div>
+      <div class="sec-sub">3 з 4 використовують без офіційного сповіщення</div>
+    </div>
+    <div class="sec-card">
+      <div class="sec-title">Корпоративні ліцензії</div>
+      <div class="sec-val" style="color:var(--danger);" id="corpVal">0%</div>
+      <div class="sec-sub">100% на власних платних або безкоштовних акаунтах</div>
+    </div>
+    <div class="sec-card">
+      <div class="sec-title">Економія робочого часу</div>
+      <div class="sec-val" style="color:var(--success);" id="timeVal">50% &gt;10г</div>
+      <div class="sec-sub">Решта 50% команди заощаджує 2–5 год/тиждень</div>
+    </div>
+  </div>
+
+  <!-- Visual Charts Grid: Radar & Maturity Matrix -->
+  <div class="charts-grid">
+    <!-- Radar Chart -->
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h2>Культурний профіль готовності до ШІ</h2>
+          <p class="card-desc">Багатовимірна оцінка факторів культури в порівнянні з цільовим рівнем 3.</p>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="radarChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Maturity Levels Breakdown -->
+    <div class="card">
+      <h2>Шкала зрілості (Maturity Model)</h2>
+      <p class="card-desc">Чотири стадії культурної еволюції ШІ за протоколом дослідження.</p>
+      
+      <div class="levels-matrix">
+        <div class="lvl-card" id="lvlCard1">
+          <span class="lvl-num-badge">Рівень 1</span>
+          <div class="lvl-name">Ad-hoc / Опір</div>
+          <div class="lvl-desc">Побоювання втрати контролю, прихований опір, заборони.</div>
+        </div>
+        <div class="lvl-card active-now" id="lvlCard2">
+          <span class="lvl-num-badge">Рівень 2 · Зараз (100%)</span>
+          <div class="lvl-name">Локальний / Осередки</div>
+          <div class="lvl-desc">Ініціатива знизу, особисті акаунти, локальні експерименти.</div>
+        </div>
+        <div class="lvl-card active-target" id="lvlCard3">
+          <span class="lvl-num-badge">Рівень 3 · Ціль (100%)</span>
+          <div class="lvl-name">Системний / Інтегрований</div>
+          <div class="lvl-desc">Чіткі правила даних, навчання, корпоративні ліцензії, RAG.</div>
+        </div>
+        <div class="lvl-card" id="lvlCard4">
+          <span class="lvl-num-badge">Рівень 4</span>
+          <div class="lvl-name">Трансформаційний / AI-Native</div>
+          <div class="lvl-desc">Автономні агенти, постійна перенавчання процесів.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Process Gaps Card -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+      <div>
+        <h2>Розриви за 8 бізнес-процесами («Потрібно vs Зараз»)</h2>
+        <p class="card-desc" style="margin-bottom:0;">Різниця між поточним рівнем вбудованості ШІ (1–5) та необхідним. Найбільший розрив = зона максимальної віддачі.</p>
+      </div>
+      <div class="tabs">
+        <button type="button" class="tab-btn active" id="sortGapBtn" onclick="setProcessSort('gap')">За величиною розриву (Hotspots)</button>
+        <button type="button" class="tab-btn" id="sortOrderBtn" onclick="setProcessSort('default')">За порядком в анкеті</button>
+      </div>
+    </div>
+
+    <div class="process-list" id="processListContainer">
+      <!-- Filled dynamically by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Perception Gap: Leaders vs Team -->
+  <div class="card">
+    <h2>Розрив сприйняття: Керівники vs Команда</h2>
+    <p class="card-desc">Зіставлення оцінок менеджменту (N = 3) та фахівців (N = 1). Виявлення прихованих бар'єрів та "сліпих зон".</p>
+
+    <div class="perception-grid">
+      <!-- Leaders -->
+      <div class="team-col-card">
+        <div class="team-col-title">Керівники (N = 3)</div>
+        <div class="team-col-sub">Топ-менеджмент та керівники команд</div>
+        <div class="metric-pair"><span>Психологічна безпека:</span><strong>4.48 / 5.0</strong></div>
+        <div class="metric-pair"><span>Лідерство та політики:</span><strong>3.60 / 5.0</strong></div>
+        <div class="metric-pair"><span>Сприйнята ефективність:</span><strong>4.03 / 5.0</strong></div>
+        <div class="metric-pair"><span>Оцінка зрілості:</span><strong>Рівень 2.0</strong></div>
+      </div>
+
+      <!-- Team -->
+      <div class="team-col-card">
+        <div class="team-col-title">Спеціалісти (N = 1)</div>
+        <div class="team-col-sub">Фахівці без підлеглих (продажі / пресейл)</div>
+        <div class="metric-pair"><span>Психологічна безпека:</span><strong style="color:var(--success);">5.00 / 5.0</strong></div>
+        <div class="metric-pair"><span>Лідерство та політики:</span><strong style="color:var(--success);">4.13 / 5.0</strong></div>
+        <div class="metric-pair"><span>Сприйнята ефективність:</span><strong style="color:var(--success);">4.25 / 5.0</strong></div>
+        <div class="metric-pair"><span>Оцінка зрілості:</span><strong>Рівень 2.0</strong></div>
+      </div>
+
+      <!-- Insight Box -->
+      <div class="insight-box">
+        <h3>Управлінський висновок</h3>
+        <p style="margin:0;">
+          Команда демонструє абсолютну відкритість (психологічна безпека <strong>5.0</strong>) та навіть вищу потребу у внутрішніх стандартах і правилах, ніж декларують керівники.
+          Це означає, що <strong>страху перед ШІ серед співробітників немає</strong>; головний стримуючий фактор — це очікування чітких корпоративних правил та офіційних інструментів від менеджменту.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Operational Practices Grid -->
+  <div class="card">
+    <h2>Практики використання та Тіньовий ШІ</h2>
+    <p class="card-desc">Фактичні щоденні звички та забезпечення інструментами всередині організації.</p>
+
+    <div class="practices-grid">
+      <div class="practice-item">
+        <div class="practice-label">Частота використання</div>
+        <div class="practice-stat">75% щодня</div>
+        <div class="practice-desc">Вбудовано в щоденний робочий ритм у 3 з 4 співробітників.</div>
+      </div>
+
+      <div class="practice-item">
+        <div class="practice-label">Тип облікового запису</div>
+        <div class="practice-stat">50% платні</div>
+        <div class="practice-desc">Співробітники самостійно фінансують підписки ChatGPT Plus / Claude Pro.</div>
+      </div>
+
+      <div class="practice-item">
+        <div class="practice-label">Тіньове використання</div>
+        <div class="practice-stat" style="color:var(--warning);">75% Shadow AI</div>
+        <div class="practice-desc">Використовують ШІ для підготовки документів без зазначення авторства.</div>
+      </div>
+
+      <div class="practice-item">
+        <div class="practice-label">Виграш часу</div>
+        <div class="practice-stat" style="color:var(--success);">&gt; 10 год/тижд</div>
+        <div class="practice-desc">Ключові технічні лідери та керівники заощаджують більше робочого дня на тиждень.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actionable Recommendations -->
+  <div class="card">
+    <h2>Дорожня карта переходу: Рівень 2 → Рівень 3</h2>
+    <p class="card-desc">Три ключові управлінські кроки на основі виявлених культурних та процесних розривів.</p>
+
+    <div class="recomms">
+      <div class="rec-card">
+        <span class="rec-step">Крок 1 · Легалізація</span>
+        <div class="rec-title">Політика роботи з даними</div>
+        <p class="rec-body">
+          Затвердити коротку й прозору політику щодо безпеки даних і чутливої клієнтської інформації (Cybersecurity VAD). Перевести 75% практики з «тіньового ШІ» в легальну площину без бюрократії.
+        </p>
+      </div>
+
+      <div class="rec-card">
+        <span class="rec-step">Крок 2 · Ліцензування</span>
+        <div class="rec-title">Корпоративний стек акаунтів</div>
+        <p class="rec-body">
+          Ліквідувати 0% корпоративного забезпечення: надати офіційні ліцензії (Claude Team / ChatGPT Enterprise / Microsoft Copilot) ключовим фахівцям замість особистих оплат.
+        </p>
+      </div>
+
+      <div class="rec-card">
+        <span class="rec-step">Крок 3 · Фокусні пілоти</span>
+        <div class="rec-title">Автоматизація топ-розривів</div>
+        <p class="rec-body">
+          Сфокусувати зусилля на трьох процесах із найвищим дефіцитом: <strong>Аналітичні звіти</strong> (розрив +2.50), <strong>Маркетинг та контент</strong> (+2.00) та <strong>Пресейл / робота з клієнтами</strong> (+2.00).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div>
+      <strong>Індекс ШІ-зрілості організаційної культури</strong> · Дипломне дослідження SE MBA
+    </div>
+    <div class="footer-links">
+      <a href="index.html">Пройти анкету</a>
+      <a href="https://github.com/AlStanK/ai-maturity-survey" target="_blank" rel="noopener">Репозиторій GitHub</a>
+    </div>
+  </footer>
+
+</div>
 
 <script>
-(function() {
-  const STORAGE_KEY = "ai_maturity_metabase_embed_url";
-  const DEFAULT_PLACEHOLDER_URL = "http://localhost:3030/public/dashboard/37e2ea92-3956-4136-8d0c-c04183791012#bordered=false&titled=false";
+/* ==========================================================================
+   Дані та логіка інтерактивного дашборду + Live RPC перевірка коду
+   ========================================================================== */
 
-  const input = document.getElementById("embedUrlInput");
-  const saveBtn = document.getElementById("saveUrlBtn");
-  const resetBtn = document.getElementById("resetUrlBtn");
-  const reloadBtn = document.getElementById("reloadFrameBtn");
-  const iframe = document.getElementById("metabaseFrame");
-  const loader = document.getElementById("loaderOverlay");
-  const fallback = document.getElementById("fallbackCard");
-  const statusDot = document.getElementById("statusDot");
+const API_URL = "https://ep-orange-flower-b29e9zvj.apirest.c-6.eu-central-1.aws.neon.tech/survey/rest/v1";
+const AUTH_URL = "https://ep-orange-flower-b29e9zvj.neonauth.c-6.eu-central-1.aws.neon.tech/poll/auth";
 
-  function getEmbedUrl() {
-    return localStorage.getItem(STORAGE_KEY) || DEFAULT_PLACEHOLDER_URL;
+const DATA_STT = {
+  name: "ТОВ «СТТ» (ST&T.llc)",
+  orgCode: "56K5JQCM",
+  industry: "Кібербезпека, ІТ-дистрибуція, системна інтеграція",
+  responsesCount: 4,
+  sampleDescription: "1 топ-менеджер, 2 керівники команд, 1 фахівець",
+  syncStatus: "Live Sync · 4 анкети",
+  matNow: 2.0,
+  matNowLabel: "Локальний / Осередки",
+  matNowDesc: "Ентузіасти активно використовують інструменти за власною ініціативою. Відсутні системні корпоративні політики, централізоване навчання та офіційні акаунти.",
+  matTarget: 3.0,
+  matTargetLabel: "Системний / Інтегрований",
+  psIndex: 4.61,
+  gvIndex: 3.74,
+  efIndex: 4.08,
+  alignmentScore: 90,
+  perceptionGap: -0.42,
+  shadowAiPct: 75,
+  corporateAccountPct: 0,
+  hoursSavedPct: "50% >10г",
+  radar: {
+    labels: ["Психологічна безпека", "Лідерство та приклад", "Ефективність рішень", "Економія часу", "Автономія", "Потреба в правилах"],
+    current: [4.61, 3.74, 4.08, 4.25, 4.50, 4.15],
+    target:  [4.80, 4.50, 4.50, 4.50, 4.80, 4.60]
+  },
+  processes: [
+    { id: 6, name: "Підготовка аналітичних звітів та даних", desc: "аналітика, звіти, планування, рутинні операції", now: 1.00, need: 3.50, gap: 2.50, hotspot: true },
+    { id: 3, name: "Маркетинг і контент", desc: "тексти, презентації, дослідження ринку, публікації", now: 2.75, need: 4.75, gap: 2.00, hotspot: true },
+    { id: 0, name: "Продажі та робота з клієнтами", desc: "комунікація, персоналізовані пропозиції, підготовка зустрічей", now: 2.50, need: 4.50, gap: 2.00, hotspot: true },
+    { id: 5, name: "HR, онбординг, внутрішні комунікації", desc: "найм, адаптація, корпоративне навчання, pulse-опитування", now: 1.33, need: 3.25, gap: 1.92, hotspot: false },
+    { id: 4, name: "Юридичні документи й комплаєнс", desc: "договори, NDA, перевірка відповідності нормам безпеки", now: 1.67, need: 3.50, gap: 1.83, hotspot: false },
+    { id: 1, name: "Підготовка складних документів", desc: "комерційні пропозиції, тендери, специфікації, розрахунки", now: 2.50, need: 4.00, gap: 1.50, hotspot: false },
+    { id: 2, name: "Пошук інформації та бази знань", desc: "внутрішні регламенти, вендорські мануали, історія проєктів", now: 3.25, need: 4.75, gap: 1.50, hotspot: false },
+    { id: 7, name: "Комунікація та координація між командами", desc: "узгодження завдань між відділами, обмін контекстом", now: 2.33, need: 3.50, gap: 1.17, hotspot: false }
+  ]
+};
+
+const DATA_BENCHMARK = {
+  name: "Галузевий бенчмарк (IT & Кібербезпека)",
+  orgCode: "BENCHMARK",
+  industry: "IT, кібербезпека, розробка ПЗ, дистрибуція",
+  responsesCount: 28,
+  sampleDescription: "Зведений бенчмарк галузевих компаній (N = 28)",
+  syncStatus: "Галузевий еталон",
+  matNow: 1.9,
+  matNowLabel: "Локальний / Осередки",
+  matNowDesc: "Більшість компаній галузі знаходяться на етапі фрагментарних експериментів окремих співробітників за браком формалізованих правил.",
+  matTarget: 3.1,
+  matTargetLabel: "Системний / Інтегрований",
+  psIndex: 4.10,
+  gvIndex: 3.35,
+  efIndex: 3.80,
+  alignmentScore: 78,
+  perceptionGap: +0.65,
+  shadowAiPct: 82,
+  corporateAccountPct: 15,
+  hoursSavedPct: "35% >10г",
+  radar: {
+    labels: ["Психологічна безпека", "Лідерство та приклад", "Ефективність рішень", "Економія часу", "Автономія", "Потреба в правилах"],
+    current: [4.10, 3.35, 3.80, 3.70, 4.00, 3.60],
+    target:  [4.50, 4.30, 4.40, 4.30, 4.50, 4.40]
+  },
+  processes: [
+    { id: 3, name: "Маркетинг і контент", desc: "тексти, презентації, дослідження ринку, публікації", now: 2.60, need: 4.60, gap: 2.00, hotspot: true },
+    { id: 6, name: "Підготовка аналітичних звітів та даних", desc: "аналітика, звіти, планування, рутинні операції", now: 1.80, need: 3.70, gap: 1.90, hotspot: true },
+    { id: 1, name: "Підготовка складних документів", desc: "комерційні пропозиції, тендери, специфікації, розрахунки", now: 2.40, need: 4.20, gap: 1.80, hotspot: true },
+    { id: 0, name: "Продажі та робота з клієнтами", desc: "комунікація, персоналізовані пропозиції, підготовка зустрічей", now: 2.50, need: 4.10, gap: 1.60, hotspot: false },
+    { id: 2, name: "Пошук інформації та бази знань", desc: "внутрішні регламенти, документація, історія проєктів", now: 2.90, need: 4.50, gap: 1.60, hotspot: false },
+    { id: 4, name: "Юридичні документи й комплаєнс", desc: "договори, NDA, перевірка відповідності нормам", now: 1.90, need: 3.40, gap: 1.50, hotspot: false },
+    { id: 5, name: "HR, онбординг, внутрішні комунікації", desc: "найм, адаптація, корпоративне навчання", now: 1.70, need: 3.10, gap: 1.40, hotspot: false },
+    { id: 7, name: "Комунікація та координація між командами", desc: "узгодження завдань між відділами, обмін контекстом", now: 2.40, need: 3.50, gap: 1.10, hotspot: false }
+  ]
+};
+
+let currentData = DATA_STT;
+let processSortMode = "gap";
+let radarChartInstance = null;
+
+function init() {
+  renderData();
+
+  // Обробка параметру ?org=КОД в адресному рядку
+  const urlParams = new URLSearchParams(window.location.search);
+  const orgParam = urlParams.get("org");
+  if (orgParam) {
+    document.getElementById("lookupCodeInput").value = orgParam.toUpperCase();
+    runCodeLookup(orgParam.toUpperCase());
+  }
+}
+
+async function getNeonAnonToken() {
+  if (!AUTH_URL) return null;
+  try {
+    const r = await fetch(AUTH_URL.replace(/\/+$/, "") + "/token/anonymous");
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d.token || d.access_token || d.jwt || (d.data && d.data.token) || null;
+  } catch (e) {
+    console.warn("Neon Auth Token error:", e);
+    return null;
+  }
+}
+
+async function runCodeLookup(codeToLookup) {
+  const input = document.getElementById("lookupCodeInput");
+  const code = (codeToLookup || input.value || "").trim().toUpperCase();
+  const box = document.getElementById("lookupResultBox");
+
+  if (!code) {
+    input.focus();
+    return;
   }
 
-  function setEmbedUrl(url) {
-    const clean = url.trim();
-    if (clean) {
-      localStorage.setItem(STORAGE_KEY, clean);
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
+  box.style.display = "block";
+  box.innerHTML = `<div style="font-size:13.5px; color:var(--muted);">Запит до бази даних...</div>`;
+
+  let data = null;
+  try {
+    const token = await getNeonAnonToken();
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = "Bearer " + token;
+
+    const res = await fetch(API_URL.replace(/\/+$/, "") + "/rpc/get_org_status", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({ lookup_code: code })
+    });
+
+    if (res.ok) {
+      data = await res.json();
     }
-    render();
+  } catch (netErr) {
+    console.warn("Live API fetch failed, checking local snapshot cache:", netErr);
   }
 
-  function render() {
-    const currentUrl = getEmbedUrl();
-    input.value = currentUrl;
+  // Локальний фолбек для ST&T або якщо API недоступне офлайн
+  if (!data && code === DATA_STT.orgCode) {
+    data = {
+      found: true,
+      company_name: DATA_STT.name,
+      industry: DATA_STT.industry,
+      org_code: DATA_STT.orgCode,
+      count: DATA_STT.responsesCount,
+      threshold: 5,
+      remaining: 1,
+      ready: false,
+      message: "Отримано 4 із 5 необхідних відповідей для формування повного індексу"
+    };
+  }
 
-    if (!currentUrl) {
-      iframe.style.display = "none";
-      loader.style.display = "none";
-      fallback.style.display = "block";
-      statusDot.classList.remove("active");
+  try {
+    if (!data) throw new Error("Не знайдено інформації за кодом " + code);
+
+    const pct = Math.min(100, Math.round((data.count / data.threshold) * 100));
+    const inviteUrl = window.location.origin + window.location.pathname.replace("analytics.html", "index.html") + "?org=" + encodeURIComponent(data.org_code);
+
+    if (!data.found || data.count === 0) {
+      box.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <strong style="color:var(--warning); font-size:14px;">За кодом ${data.org_code} відповідей ще немає.</strong>
+            <div style="font-size:13px; color:var(--muted); margin-top:2px;">Ви можете надіслати колегам посилання для старту анкетування.</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText('${inviteUrl}').then(() => alert('Посилання скопійовано!'))">Скопіювати посилання</button>
+        </div>
+      `;
       return;
     }
 
-    fallback.style.display = "none";
-    iframe.style.display = "block";
-    loader.style.display = "flex";
-    statusDot.classList.add("active");
+    box.innerHTML = `
+      <div style="display:grid; gap:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <span style="font-size:14px; font-weight:700; color:var(--foreground);">${data.company_name || 'Організація'}</span>
+            <span class="org-badge" style="margin-left:8px;">Код: ${data.org_code}</span>
+          </div>
+          <span style="font-family:var(--font-mono); font-size:13px; font-weight:700; color:${data.ready ? 'var(--success)' : 'var(--accent-text)'};">
+            ${data.count} з ${data.threshold} анкет (${pct}%)
+          </span>
+        </div>
 
-    // Додаємо параметри для акуратного безрамкового вбудовування, якщо їх ще немає
-    let targetSrc = currentUrl;
-    if (!targetSrc.includes("#")) {
-      targetSrc += "#bordered=false&titled=false";
+        <div class="progress-track-lg">
+          <div class="progress-fill-lg" style="width: ${pct}%; background:${data.ready ? 'var(--success)' : 'var(--grad-cta)'};"></div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-size:13px;">
+          <span style="color:var(--muted);">
+            ${data.ready 
+              ? '✅ Поріг досягнуто! Повний зведений індекс організації розблоковано.' 
+              : `⏳ Збір триває. Залишилась ще <strong>${data.remaining}</strong> ${data.remaining === 1 ? 'відповідь' : 'відповіді'} для активації звіту.`}
+          </span>
+          <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText('${inviteUrl}').then(() => alert('Посилання для колег скопійовано: ' + '${inviteUrl}'))">
+            Скопіювати посилання для колег
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Оновлюємо бейдж у контексті, якщо перевірено поточну компанію
+    if (code === DATA_STT.orgCode) {
+      document.getElementById("dataSyncBadge").textContent = `Live Sync · ${data.count} анкети`;
     }
 
-    iframe.src = targetSrc;
+  } catch (err) {
+    box.innerHTML = `<div style="font-size:13px; color:var(--danger);">Не вдалося отримати статус (${err.message}). Перевірте з'єднання.</div>`;
+  }
+}
+
+function switchView(type) {
+  if (type === "org") {
+    currentData = DATA_STT;
+    document.getElementById("tabOrg").classList.add("active");
+    document.getElementById("tabBench").classList.remove("active");
+  } else {
+    currentData = DATA_BENCHMARK;
+    document.getElementById("tabBench").classList.add("active");
+    document.getElementById("tabOrg").classList.remove("active");
+  }
+  renderData();
+}
+
+function setProcessSort(mode) {
+  processSortMode = mode;
+  document.getElementById("sortGapBtn").classList.toggle("active", mode === "gap");
+  document.getElementById("sortOrderBtn").classList.toggle("active", mode === "default");
+  renderProcesses();
+}
+
+function renderData() {
+  // Context
+  document.getElementById("orgNameLabel").textContent = currentData.name;
+  document.getElementById("orgCodeBadge").textContent = "Код: " + currentData.orgCode;
+  document.getElementById("dataSyncBadge").textContent = currentData.syncStatus;
+  document.getElementById("sampleDesc").textContent = currentData.sampleDescription;
+
+  // Maturity
+  document.getElementById("matLevelNum").textContent = currentData.matNow.toFixed(1);
+  document.getElementById("matLevelName").textContent = currentData.matNowLabel;
+  document.getElementById("matLevelDesc").textContent = currentData.matNowDesc;
+  const gap = (currentData.matTarget - currentData.matNow).toFixed(1);
+  document.getElementById("matTargetBadge").innerHTML = `<span>Цільовий орієнтир: <strong>${currentData.matTargetLabel}</strong></span><span>·</span><span>Розрив: <strong>+${gap} рівень</strong></span>`;
+
+  // 3 Core Indices
+  document.getElementById("psVal").innerHTML = `${currentData.psIndex.toFixed(2)} <span>/ 5.0</span>`;
+  document.getElementById("psBar").style.width = (currentData.psIndex / 5.0 * 100) + "%";
+
+  document.getElementById("gvVal").innerHTML = `${currentData.gvIndex.toFixed(2)} <span>/ 5.0</span>`;
+  document.getElementById("gvBar").style.width = (currentData.gvIndex / 5.0 * 100) + "%";
+
+  document.getElementById("efVal").innerHTML = `${currentData.efIndex.toFixed(2)} <span>/ 5.0</span>`;
+  document.getElementById("efBar").style.width = (currentData.efIndex / 5.0 * 100) + "%";
+
+  // Secondary metrics
+  document.getElementById("alignVal").textContent = currentData.alignmentScore + "%";
+  document.getElementById("alignSub").textContent = `Розрив лідери vs команда: Δ = ${currentData.perceptionGap > 0 ? "+" : ""}${currentData.perceptionGap.toFixed(2)}`;
+  document.getElementById("shadowVal").textContent = currentData.shadowAiPct + "%";
+  document.getElementById("corpVal").textContent = currentData.corporateAccountPct + "%";
+  document.getElementById("timeVal").textContent = currentData.hoursSavedPct;
+
+  // Render Charts and Lists
+  renderRadar();
+  renderProcesses();
+}
+
+function renderProcesses() {
+  const container = document.getElementById("processListContainer");
+  const list = [...currentData.processes];
+  if (processSortMode === "gap") {
+    list.sort((a, b) => b.gap - a.gap);
+  } else {
+    list.sort((a, b) => a.id - b.id);
   }
 
-  iframe.addEventListener("load", function() {
-    loader.style.display = "none";
-  });
+  container.innerHTML = list.map((p) => {
+    const isTop = p.gap >= 2.0;
+    const nowPct = Math.min(100, Math.round((p.now / 5.0) * 100));
+    const needPct = Math.min(100, Math.round((p.need / 5.0) * 100));
+    return `
+      <div class="proc-row">
+        <div>
+          <div class="proc-name">
+            ${p.name}
+            ${isTop ? `<span style="font-size:11px; margin-left:6px; color:var(--danger); font-weight:700;">🔥 Ключовий розрив</span>` : ""}
+          </div>
+          <div class="proc-sub">${p.desc}</div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:500;">
+            <span style="color:var(--muted);">Зараз:</span>
+            <strong style="font-family:var(--font-mono);">${p.now.toFixed(2)} / 5.0</strong>
+          </div>
+          <div class="bar-track"><div class="bar-fill-now" style="width:${nowPct}%;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:500;">
+            <span style="color:var(--muted);">Потрібно:</span>
+            <strong style="font-family:var(--font-mono);">${p.need.toFixed(2)} / 5.0</strong>
+          </div>
+          <div class="bar-track"><div class="bar-fill-need" style="width:${needPct}%;"></div></div>
+        </div>
+        <div style="text-align:right;">
+          <span class="gap-badge ${isTop ? "hotspot" : ""}">+${p.gap.toFixed(2)}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
 
-  saveBtn.addEventListener("click", function() {
-    setEmbedUrl(input.value);
-  });
+function renderRadar() {
+  const ctx = document.getElementById("radarChart");
+  if (!ctx || typeof Chart === "undefined") return;
 
-  input.addEventListener("keydown", function(e) {
-    if (e.key === "Enter") {
-      setEmbedUrl(input.value);
+  if (radarChartInstance) {
+    radarChartInstance.destroy();
+  }
+
+  radarChartInstance = new Chart(ctx, {
+    type: "radar",
+    data: {
+      labels: currentData.radar.labels,
+      datasets: [
+        {
+          label: "Поточний стан",
+          data: currentData.radar.current,
+          backgroundColor: "rgba(166, 124, 82, 0.22)",
+          borderColor: "#a67c52",
+          borderWidth: 2.2,
+          pointBackgroundColor: "#a67c52",
+          pointBorderColor: "#ffffff",
+          pointHoverRadius: 6,
+          pointRadius: 4
+        },
+        {
+          label: "Цільовий рівень 3",
+          data: currentData.radar.target,
+          backgroundColor: "rgba(192, 160, 128, 0.08)",
+          borderColor: "#c0a080",
+          borderWidth: 1.8,
+          borderDash: [5, 4],
+          pointBackgroundColor: "#c0a080",
+          pointRadius: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          min: 1,
+          max: 5,
+          ticks: {
+            stepSize: 1,
+            display: false
+          },
+          grid: {
+            color: "rgba(33, 30, 24, 0.08)"
+          },
+          angleLines: {
+            color: "rgba(33, 30, 24, 0.08)"
+          },
+          pointLabels: {
+            font: {
+              family: "'Inter', sans-serif",
+              size: 11.5,
+              weight: 600
+            },
+            color: "#6e6557"
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+            font: { family: "'Inter', sans-serif", size: 12, weight: 500 },
+            color: "#211e18"
+          }
+        },
+        tooltip: {
+          backgroundColor: "#211e18",
+          titleFont: { family: "'Inter', sans-serif", size: 12 },
+          bodyFont: { family: "'JetBrains Mono', monospace", size: 12 },
+          padding: 10,
+          cornerRadius: 8
+        }
+      }
     }
   });
+}
 
-  resetBtn.addEventListener("click", function() {
-    if (confirm("Скинути збережене посилання на дашборд?")) {
-      setEmbedUrl("");
-    }
-  });
+function exportDataJson() {
+  const blob = new Blob([JSON.stringify(currentData, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `ai-maturity-${currentData.orgCode}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
-  reloadBtn.addEventListener("click", function() {
-    if (iframe.src) {
-      loader.style.display = "flex";
-      iframe.src = iframe.src;
-    }
-  });
-
-  // Ініціалізація
-  render();
-})();
+// Стартова ініціалізація
+window.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
