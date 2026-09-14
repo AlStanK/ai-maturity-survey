@@ -131,14 +131,14 @@ body {
   font-family: var(--font-mono);
   font-weight: 600;
   font-size: 11.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--accent-text);
   background: var(--accent-tint);
   border: 1px solid var(--accent-border);
   padding: 4px 12px;
   border-radius: var(--radius-full);
 }
+.consent-opts { margin-top: var(--space-6); }
 .brand::before {
   content: "";
   width: 6px;
@@ -181,8 +181,7 @@ p { margin: 0 0 14px; color: var(--foreground); }
   display: block;
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--accent-text);
   margin: 0 0 12px;
   font-weight: 600;
@@ -236,12 +235,6 @@ code, kbd, samp { font-family: var(--font-mono); }
   border-radius: var(--field-radius);
   padding: 14px 16px;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
-}
-.fact:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-card);
-  border-color: var(--marble-300);
 }
 .fact b { display: block; font-weight: 700; font-size: 24px; letter-spacing: -0.02em; line-height: 1.1; color: var(--foreground); font-variant-numeric: tabular-nums; }
 .fact span { display: block; font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.4; font-weight: 500; }
@@ -469,8 +462,7 @@ label.opt input[disabled] { opacity: 0.5; cursor: not-allowed; }
 .pair-tag {
   font-family: var(--font-mono);
   font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   color: var(--muted);
   background: var(--surface-secondary);
   border: 1px solid var(--border);
@@ -478,6 +470,8 @@ label.opt input[disabled] { opacity: 0.5; cursor: not-allowed; }
   border-radius: var(--radius-sm);
   text-align: center;
   font-weight: 600;
+  width: fit-content;
+  max-width: 100%;
 }
 .pair-tag.need { color: var(--accent-text); background: var(--accent-tint); border-color: var(--accent-border); }
 
@@ -676,7 +670,11 @@ hr.rule { border: 0; border-top: 1px solid var(--separator); margin: 28px 0; }
   .fact { padding: 10px 12px; }
   .fact b { font-size: 20px; }
   .pair-row { grid-template-columns: 1fr; gap: 6px; }
-  .lk.na { flex: 1 1 46px; }
+  .pair-tag { justify-self: start; width: fit-content; }
+  .likert { gap: 6px; }
+  .lk { min-width: 38px; }
+  .lk span { height: 42px; font-size: 13.5px; }
+  .lk.na { flex: 1 1 54px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.001ms !important; } }
 </style>
@@ -687,18 +685,9 @@ hr.rule { border: 0; border-top: 1px solid var(--separator); margin: 28px 0; }
 
   <!-- ============ INTRO ============ -->
   <section id="intro">
-    <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
-      <a href="analytics.html" class="nav-analytics-btn" style="display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; color: var(--accent-text); background: var(--accent-tint); border: 1px solid var(--accent-border); padding: 6px 14px; border-radius: var(--radius-full); text-decoration: none; transition: all 0.15s ease;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-        <span>Зведена аналітика (Metabase BI) →</span>
-      </a>
-    </div>
     <div class="hero">
       <div class="hero-copy">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div class="brand">AInoia · Дослідження</div>
-          <a href="analytics.html" class="brand" style="text-decoration:none;">Дашборд результатів →</a>
-        </div>
+        <div class="brand">AInoia · Дослідження</div>
         <h1>Індекс <em>ШІ-зрілості</em><br>організаційної культури</h1>
         <p class="lede">Інструменти доступні всім. Системно ними користуються одиниці. Різницю робить не технологія, а культура — і її можна виміряти.</p>
         <p class="antithesis">Не про інструменти. Про готовність.</p>
@@ -706,7 +695,7 @@ hr.rule { border: 0; border-top: 1px solid var(--separator); margin: 28px 0; }
       </div>
       <div class="hero-art"><div class="hero-art-inner"><img src="assets/plato-hero.png" alt="" loading="eager" decoding="async"></div></div>
       <div class="facts">
-        <div class="fact"><b>50</b><span>питань</span></div>
+        <div class="fact"><b>51</b><span>питання</span></div>
         <div class="fact"><b>15</b><span>хвилин</span></div>
         <div class="fact"><b>0</b><span>персональних даних</span></div>
       </div>
@@ -725,7 +714,7 @@ hr.rule { border: 0; border-top: 1px solid var(--separator); margin: 28px 0; }
         </div>
         <p><strong>Добровільність.</strong> Ви можете припинити заповнення на будь-якому питанні. Незавершені анкети не надсилаються.</p>
       </div>
-      <div class="opts" style="margin-top:var(--space-6)">
+      <div class="opts consent-opts">
         <label class="opt"><input type="checkbox" id="consent"><span>Я ознайомився / ознайомилася з умовами та погоджуюся взяти участь в опитуванні</span></label>
       </div>
       <div class="err" id="consentErr">Щоб продовжити, потрібна ваша згода.</div>
@@ -1095,13 +1084,19 @@ const save = () => LS.set("aimat_answers", JSON.stringify(A));
    -------------------------------------------------------------------------- */
 function likertHtml(id, na, ends) {
   const naLabel = typeof na === "string" ? na : "Н/З";
-  let h = '<div class="likert">';
-  for (let i = 1; i <= 5; i++) {
-    h += `<label class="lk"><input type="radio" name="${id}" value="${i}"${A[id] == i ? " checked" : ""}><span>${i}</span></label>`;
-  }
-  if (na) h += `<label class="lk na"><input type="radio" name="${id}" value="na"${A[id] === "na" ? " checked" : ""}><span>${esc(naLabel)}</span></label>`;
-  h += "</div>";
   const labels = Array.isArray(ends) ? ends : LIKERT_ENDS;
+  let h = '<div class="likert" role="radiogroup">';
+  for (let i = 1; i <= 5; i++) {
+    let aria = `${i} з 5`;
+    if (i === 1 && labels && labels[0]) aria = labels[0];
+    else if (i === 5 && labels && labels[1]) aria = labels[1];
+    h += `<label class="lk"><input type="radio" name="${id}" value="${i}" aria-label="${esc(aria)}"${A[id] == i ? " checked" : ""}><span>${i}</span></label>`;
+  }
+  if (na) {
+    const naAria = naLabel === "Н/З" ? "Не стосується моєї роботи (Н/З)" : naLabel;
+    h += `<label class="lk na"><input type="radio" name="${id}" value="na" aria-label="${esc(naAria)}"${A[id] === "na" ? " checked" : ""}><span>${esc(naLabel)}</span></label>`;
+  }
+  h += "</div>";
   if (ends !== false) h += `<div class="scale-ends"><span>${esc(labels[0])}</span><span>${esc(labels[1])}</span></div>`;
   return h;
 }
